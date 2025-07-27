@@ -3,6 +3,9 @@
 # Agent OS
 .agent-os/
 
+#Environment
+.env
+
 # Dependencies
 node_modules/
 /.pnp

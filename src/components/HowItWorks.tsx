@@ -23,42 +23,42 @@ const steps = [
 
 export function HowItWorks() {
   return (
-    <section className="py-20 lg:py-32 bg-surface/30">
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="text-center mb-16">
-          <h2 className="text-display-md font-bold text-foreground mb-4">
+    <section className="py-12 sm:py-16 lg:py-24 xl:py-32 bg-surface/30">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+        <div className="text-center mb-12 sm:mb-16">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold text-foreground mb-3 sm:mb-4">
             How it works
           </h2>
-          <p className="text-xl text-text-secondary max-w-2xl mx-auto">
+          <p className="text-base sm:text-lg lg:text-xl text-text-secondary max-w-2xl mx-auto">
             Start building in public in three simple steps
           </p>
         </div>
         
-        <div className="grid lg:grid-cols-3 gap-8">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-12">
           {steps.map((step, index) => {
             const Icon = step.icon
             return (
-              <div key={index} className="relative text-center lg:text-left">
-                {/* Connection line */}
+              <div key={index} className="relative text-center">
+                {/* Connection line - only show on lg+ screens */}
                 {index < steps.length - 1 && (
                   <div className="hidden lg:block absolute top-12 left-full w-full h-px bg-gradient-to-r from-border to-transparent z-0" />
                 )}
                 
-                <div className="relative z-10 space-y-6">
-                  <div className="flex items-center justify-center lg:justify-start space-x-4">
-                    <div className="flex items-center justify-center w-12 h-12 bg-primary rounded-xl">
-                      <Icon className="w-6 h-6 text-background" />
+                <div className="relative z-10 space-y-4 sm:space-y-6">
+                  <div className="flex items-center justify-center space-x-3 sm:space-x-4">
+                    <div className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-primary rounded-lg sm:rounded-xl">
+                      <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-background" />
                     </div>
-                    <span className="text-2xl font-bold text-text-muted">
+                    <span className="text-xl sm:text-2xl font-bold text-text-muted">
                       {step.number}
                     </span>
                   </div>
                   
-                  <div className="space-y-3">
-                    <h3 className="text-xl font-semibold text-foreground">
+                  <div className="space-y-2 sm:space-y-3">
+                    <h3 className="text-lg sm:text-xl font-semibold text-foreground">
                       {step.title}
                     </h3>
-                    <p className="text-text-secondary leading-relaxed">
+                    <p className="text-sm sm:text-base text-text-secondary leading-relaxed max-w-sm mx-auto">
                       {step.description}
                     </p>
                   </div>

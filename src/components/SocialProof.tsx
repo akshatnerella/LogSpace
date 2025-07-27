@@ -30,16 +30,16 @@ const stats = [
 
 export function SocialProof() {
   return (
-    <section className="py-20 lg:py-32">
-      <div className="max-w-7xl mx-auto px-6">
+    <section className="py-12 sm:py-16 lg:py-24 xl:py-32">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
         {/* Stats */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 mb-20">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8 mb-16 sm:mb-20">
           {stats.map((stat, index) => (
             <div key={index} className="text-center">
-              <div className="text-3xl lg:text-4xl font-bold text-primary mb-2">
+              <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-primary mb-1 sm:mb-2">
                 {stat.value}
               </div>
-              <div className="text-text-secondary text-sm lg:text-base">
+              <div className="text-text-secondary text-xs sm:text-sm lg:text-base">
                 {stat.label}
               </div>
             </div>
@@ -47,42 +47,42 @@ export function SocialProof() {
         </div>
 
         {/* Testimonials */}
-        <div className="text-center mb-16">
-          <h2 className="text-display-md font-bold text-foreground mb-4">
+        <div className="text-center mb-12 sm:mb-16">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold text-foreground mb-3 sm:mb-4">
             Loved by builders worldwide
           </h2>
-          <div className="flex items-center justify-center space-x-1 mb-8">
+          <div className="flex items-center justify-center space-x-1 mb-6 sm:mb-8">
             {[...Array(5)].map((_, i) => (
-              <Star key={i} className="w-5 h-5 text-yellow-400 fill-current" />
+              <Star key={i} className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-400 fill-current" />
             ))}
-            <span className="ml-2 text-text-secondary">4.9/5 from 200+ reviews</span>
+            <span className="ml-2 text-text-secondary text-sm sm:text-base">4.9/5 from 200+ reviews</span>
           </div>
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-8">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
           {testimonials.map((testimonial, index) => (
-            <div key={index} className="bg-surface border border-border rounded-2xl p-8 hover:border-border-hover transition-colors">
-              <div className="flex items-center space-x-1 mb-6">
+            <div key={index} className="bg-surface border border-border rounded-xl sm:rounded-2xl p-6 sm:p-8 hover:border-border-hover transition-colors">
+              <div className="flex items-center space-x-1 mb-4 sm:mb-6">
                 {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="w-4 h-4 text-yellow-400 fill-current" />
+                  <Star key={i} className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-400 fill-current" />
                 ))}
               </div>
               
-              <blockquote className="text-foreground mb-6 leading-relaxed">
-                "{testimonial.quote}"
+              <blockquote className="text-foreground mb-4 sm:mb-6 leading-relaxed text-sm sm:text-base">
+                &ldquo;{testimonial.quote}&rdquo;
               </blockquote>
               
               <div className="flex items-center space-x-3">
                 <img 
                   src={testimonial.avatar} 
                   alt={testimonial.author}
-                  className="w-10 h-10 rounded-full"
+                  className="w-8 h-8 sm:w-10 sm:h-10 rounded-full"
                 />
                 <div>
-                  <div className="font-semibold text-foreground">
+                  <div className="font-semibold text-foreground text-sm sm:text-base">
                     {testimonial.author}
                   </div>
-                  <div className="text-text-secondary text-sm">
+                  <div className="text-text-secondary text-xs sm:text-sm">
                     {testimonial.role}
                   </div>
                 </div>

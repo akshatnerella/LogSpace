@@ -1,65 +1,59 @@
 import { DashboardHeader } from '@/components/dashboard/DashboardHeader'
 import { DashboardStats } from '@/components/dashboard/DashboardStats'
 import { CreateFirstProject } from '@/components/dashboard/CreateFirstProject'
+import { PrimaryCallToAction } from '@/components/dashboard/PrimaryCallToAction'
+import { QuickActions } from '@/components/dashboard/QuickActions'
+import { RecentProjects } from '@/components/dashboard/RecentProjects'
+import { ProTips } from '@/components/dashboard/ProTips'
 
 export default function DashboardPage() {
   return (
     <div className="min-h-screen bg-background">
       <DashboardHeader />
       
-      <main className="max-w-7xl mx-auto px-6 py-8">
-        {/* Welcome Section */}
-        <div className="mb-8 animate-fade-in">
-          <h1 className="text-3xl font-bold text-foreground mb-2">
-            Welcome to LogSpace! 👋
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+        <div className="mb-8 sm:mb-10 animate-fade-in">
+          <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">
+            Welcome back, Builder! 👋
           </h1>
-          <p className="text-text-secondary">
-            Ready to start building in public? Let's create your first project log.
+          <p className="text-sm sm:text-base text-text-secondary">
+            Let&apos;s create your next project or explore the community.
           </p>
         </div>
 
-        {/* Stats */}
-        <DashboardStats />
+        <div className="mb-8 sm:mb-10">
+          <DashboardStats />
+        </div>
 
-        {/* Main Content */}
-        <div className="grid lg:grid-cols-3 gap-8">
-          {/* Primary Content */}
-          <div className="lg:col-span-2">
-            <CreateFirstProject />
-          </div>
+        <div className="mb-8 sm:mb-10">
+          <PrimaryCallToAction />
+        </div>
 
-          {/* Sidebar */}
-          <div className="space-y-6">
-            {/* Quick Actions */}
-            <div className="bg-surface border border-border rounded-2xl p-6 animate-fade-in">
-              <h3 className="font-semibold text-foreground mb-4">Quick Actions</h3>
-              <div className="space-y-3">
-                <button className="w-full text-left p-3 bg-background border border-border rounded-xl hover:border-border-hover transition-colors">
-                  <div className="font-medium text-foreground text-sm">Create Log</div>
-                  <div className="text-text-muted text-xs">Share your progress</div>
-                </button>
-                <button className="w-full text-left p-3 bg-background border border-border rounded-xl hover:border-border-hover transition-colors">
-                  <div className="font-medium text-foreground text-sm">Explore Community</div>
-                  <div className="text-text-muted text-xs">Discover other builders</div>
-                </button>
-                <button className="w-full text-left p-3 bg-background border border-border rounded-xl hover:border-border-hover transition-colors">
-                  <div className="font-medium text-foreground text-sm">Setup Profile</div>
-                  <div className="text-text-muted text-xs">Complete your profile</div>
-                </button>
-              </div>
-            </div>
+        <div className="mb-8 sm:mb-10">
+          <QuickActions />
+        </div>
 
-            {/* Tips */}
-            <div className="bg-gradient-to-br from-primary/10 to-accent/10 border border-primary/20 rounded-2xl p-6 animate-fade-in">
-              <h3 className="font-semibold text-foreground mb-4">💡 Pro Tips</h3>
-              <div className="space-y-3 text-sm text-text-secondary">
-                <div>• Share updates regularly to build momentum</div>
-                <div>• Engage with other builders for feedback</div>
-                <div>• Use hashtags to reach the right audience</div>
-                <div>• Be authentic about your challenges</div>
-              </div>
-            </div>
-          </div>
+        <div className="mb-8 sm:mb-10">
+          <CreateFirstProject />
+          <RecentProjects />
+        </div>
+
+        <div className="mb-8 sm:mb-10">
+          <ProTips />
+        </div>
+
+        <div className="fixed bottom-6 right-6 z-50">
+          <a href="/create">
+            <button
+              className="w-14 h-14 bg-primary hover:bg-primary-dark text-background rounded-full shadow-lg flex items-center justify-center transition-all duration-200 hover:scale-105"
+              title="Create New Project"
+              aria-label="Create New Project"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+              </svg>
+            </button>
+          </a>
         </div>
       </main>
     </div>

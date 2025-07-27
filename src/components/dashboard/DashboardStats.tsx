@@ -33,33 +33,33 @@ const stats = [
 
 export function DashboardStats() {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
       {stats.map((stat, index) => {
         const Icon = stat.icon
         const animationDelay = `animate-fade-in [animation-delay:${index * 100}ms]`
         return (
           <div
             key={stat.title}
-            className={`bg-surface border border-border rounded-2xl p-6 hover:border-border-hover transition-colors ${animationDelay}`}
+            className={`bg-surface border border-border rounded-lg sm:rounded-xl p-3 sm:p-4 hover:border-border-hover transition-colors ${animationDelay}`}
           >
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center">
-                <Icon className="w-6 h-6 text-primary" />
+            <div className="flex items-center gap-2 sm:gap-3 mb-2">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-primary/5 rounded-lg flex items-center justify-center">
+                <Icon className="w-4 h-4 sm:w-5 sm:h-5 text-primary/70" />
               </div>
-              <div className={`text-sm font-medium px-2 py-1 rounded-full ${
+              <div className={`text-xs font-medium px-1.5 py-0.5 rounded-full ${
                 stat.trend === 'up' 
-                  ? 'text-green-400 bg-green-400/10' 
-                  : 'text-red-400 bg-red-400/10'
+                  ? 'text-green-600 bg-green-50' 
+                  : 'text-red-600 bg-red-50'
               }`}>
                 {stat.change}
               </div>
             </div>
             
-            <div className="space-y-1">
-              <div className="text-2xl font-bold text-foreground">
+            <div>
+              <div className="text-lg sm:text-xl font-bold text-foreground">
                 {stat.value}
               </div>
-              <div className="text-sm text-text-secondary">
+              <div className="text-xs sm:text-sm text-text-secondary">
                 {stat.title}
               </div>
             </div>
