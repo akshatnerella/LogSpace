@@ -15,6 +15,7 @@ module.exports = {
         // Background colors
         background: 'hsl(222 14% 8%)', // #0f0f14
         surface: 'hsl(222 14% 11%)', // #1a1a20
+        'surface-light': 'hsl(222 14% 14%)', // #21212a
         'surface-hover': 'hsl(222 14% 14%)', // #21212a
         
         // Text colors

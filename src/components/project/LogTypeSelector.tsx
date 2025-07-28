@@ -8,7 +8,7 @@ interface LogTypeSelectorProps {
   isOpen: boolean
   onClose: () => void
   onSelectType: (type: 'text' | 'visual' | 'code') => void
-  projectSlug: string
+  projectId: string
 }
 
 const logTypes = [
@@ -50,7 +50,7 @@ const logTypes = [
   }
 ]
 
-export function LogTypeSelector({ isOpen, onClose, onSelectType, projectSlug }: LogTypeSelectorProps) {
+export function LogTypeSelector({ isOpen, onClose, onSelectType, projectId }: LogTypeSelectorProps) {
   const [selectedType, setSelectedType] = useState<'text' | 'visual' | 'code'>('text')
 
   if (!isOpen) return null

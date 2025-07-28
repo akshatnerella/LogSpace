@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { useSession, signOut } from 'next-auth/react'
+import { useAuth } from '@/lib/auth'
 import { Menu, X, Settings, LogOut } from 'lucide-react'
 import { Button } from './Button'
 import { SignInModal } from './auth/SignInModal'
@@ -18,10 +18,9 @@ export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [userMenuOpen, setUserMenuOpen] = useState(false)
   const [showSignInModal, setShowSignInModal] = useState(false)
-  const { data: session, status } = useSession()
+  const { user, signOut, loading } = useAuth()
   
-  const isSignedIn = status === 'authenticated'
-  const user = session?.user
+  const isSignedIn = !!user
 
   const handleSignOut = async () => {
     try {
@@ -66,12 +65,12 @@ export function Navbar() {
                   className="flex items-center space-x-2 p-2 rounded-lg hover:bg-surface transition-colors"
                 >
                   <img
-                    src={user?.image || "/default-avatar.png"}
-                    alt={user?.name || 'User'}
+                    src={user?.user_metadata?.avatar_url || "/default-avatar.png"}
+                    alt={user?.user_metadata?.full_name || 'User'}
                     className="w-8 h-8 rounded-full"
                   />
                   <span className="text-sm font-medium text-foreground">
-                    {user?.name || user?.email || 'User'}
+                    {user?.user_metadata?.full_name || user?.email || 'User'}
                   </span>
                 </button>
                 
@@ -122,9 +121,9 @@ export function Navbar() {
 
         {/* Mobile menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden fixed inset-0 z-50 bg-background/95 backdrop-blur-md">
+          <div className="md:hidden fixed inset-0 z-50 bg-background backdrop-blur-xl">
             {/* Mobile menu header */}
-            <div className="flex items-center justify-between h-16 px-6 border-b border-border">
+            <div className="flex items-center justify-between h-16 px-6 border-b border-border bg-background">
               <Link href="/" className="flex items-center space-x-2" onClick={() => setMobileMenuOpen(false)}>
                 <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
                   <span className="text-background font-bold text-lg">L</span>
@@ -141,7 +140,7 @@ export function Navbar() {
             </div>
             
             {/* Mobile menu content */}
-            <div className="px-6 py-8 space-y-8">
+            <div className="px-6 py-8 space-y-8 bg-background min-h-screen">
               {/* Navigation Links */}
               <div className="space-y-6">
                 {navigation.map((item) => (

@@ -51,7 +51,7 @@ export function ProjectEmptyState({ project }: ProjectEmptyStateProps) {
           </div>
 
           {/* Primary CTA */}
-          <a href={`/project/${project.slug}/create-log`}>
+          <a href={`/project/${project.id}/create-log`}>
             <Button
               variant="primary"
               size="lg"

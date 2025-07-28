@@ -5,12 +5,12 @@ import { ArrowLeft, Send, Bold, Italic, Link2, Eye, EyeOff } from 'lucide-react'
 import { Button } from '../Button'
 
 interface TextLogFormProps {
-  projectSlug: string
+  projectId: string
   onBack: () => void
   onSubmit: (data: { title: string; content: string }) => void
 }
 
-export function TextLogForm({ projectSlug, onBack, onSubmit }: TextLogFormProps) {
+export function TextLogForm({ projectId, onBack, onSubmit }: TextLogFormProps) {
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
   const [isPreview, setIsPreview] = useState(false)

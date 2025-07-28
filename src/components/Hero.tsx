@@ -4,7 +4,7 @@ import Link from 'next/link'
 
 export function Hero() {
   return (
-    <section className="relative overflow-hidden py-12 sm:py-16 lg:py-24 xl:py-32">
+    <section className="relative overflow-hidden py-8 sm:py-12 lg:py-16 xl:py-20">
       {/* Background gradient */}
       <div className="absolute inset-0 bg-gradient-to-br from-primary-muted/20 via-background to-accent-muted/20" />
       
@@ -59,7 +59,7 @@ export function Hero() {
           </div>
           
           {/* Right Column - Hero Visual */}
-          <div className="relative animate-slide-in-right mt-8 lg:mt-0">
+          <div className="relative animate-slide-in-right mt-8 lg:mt-0 hidden md:block">
             <div className="relative bg-surface border border-border rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-2xl">
               {/* Mock interface */}
               <div className="space-y-3 sm:space-y-4">
@@ -91,9 +91,9 @@ export function Hero() {
                 ))}
               </div>
               
-              {/* Floating elements */}
-              <div className="absolute -top-2 -right-2 sm:-top-4 sm:-right-4 h-8 w-8 sm:h-12 sm:w-12 bg-accent rounded-lg sm:rounded-xl shadow-lg animate-pulse" />
-              <div className="absolute -bottom-2 -left-2 sm:-bottom-4 sm:-left-4 h-6 w-6 sm:h-8 sm:w-8 bg-primary rounded-md sm:rounded-lg shadow-lg animate-pulse delay-300" />
+              {/* Floating elements - only visible on tablets and larger */}
+              <div className="hidden md:block absolute -top-4 -right-4 h-12 w-12 bg-accent rounded-xl shadow-lg animate-pulse" />
+              <div className="hidden md:block absolute -bottom-4 -left-4 h-8 w-8 bg-primary rounded-lg shadow-lg animate-pulse delay-300" />
             </div>
           </div>
         </div>

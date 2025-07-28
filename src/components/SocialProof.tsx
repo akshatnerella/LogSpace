@@ -30,7 +30,7 @@ const stats = [
 
 export function SocialProof() {
   return (
-    <section className="py-12 sm:py-16 lg:py-24 xl:py-32">
+    <section className="py-8 sm:py-12 lg:py-16 xl:py-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         {/* Stats */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8 mb-16 sm:mb-20">

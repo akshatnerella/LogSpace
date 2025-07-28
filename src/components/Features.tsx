@@ -25,9 +25,9 @@ const features = [
 
 export function Features() {
   return (
-    <section id="features" className="py-12 sm:py-16 lg:py-24 xl:py-32">
+    <section id="features" className="py-8 sm:py-12 lg:py-16 xl:py-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
-        <div className="text-center mb-12 sm:mb-16">
+        <div className="text-center mb-8 sm:mb-12">
           <h2 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold text-foreground mb-3 sm:mb-4">
             Everything you need to{' '}
             <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">

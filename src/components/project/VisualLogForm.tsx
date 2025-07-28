@@ -5,7 +5,7 @@ import { ArrowLeft, Upload, X, Image as ImageIcon, Video, Send, Camera } from 'l
 import { Button } from '../Button'
 
 interface VisualLogFormProps {
-  projectSlug: string
+  projectId: string
   onBack: () => void
   onSubmit: (data: { files: File[]; caption: string }) => void
 }
@@ -16,7 +16,7 @@ interface UploadedFile {
   type: 'image' | 'video'
 }
 
-export function VisualLogForm({ projectSlug, onBack, onSubmit }: VisualLogFormProps) {
+export function VisualLogForm({ projectId, onBack, onSubmit }: VisualLogFormProps) {
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([])
   const [caption, setCaption] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)

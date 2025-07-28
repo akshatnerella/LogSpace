@@ -3,28 +3,11 @@
 import { notFound, useRouter } from 'next/navigation'
 import { ProjectAdminPage } from '@/components/project/ProjectAdminPage'
 import { useEffect, useState } from 'react'
-
-// Mock data - replace with real data fetching
-const getProject = (slug: string) => {
-  const projects = [
-    {
-      id: '1',
-      name: 'My Awesome Project',
-      description: 'Building the next generation of productivity tools with a focus on simplicity and power.',
-      slug: 'my-awesome-project',
-      visibility: 'public' as const,
-      createdAt: '2025-01-10',
-      logCount: 0,
-      status: 'active' as const
-    }
-  ]
-  
-  return projects.find(p => p.slug === slug)
-}
+import { fetchProjectById } from '@/lib/queries'
 
 interface AdminPageProps {
   params: Promise<{
-    slug: string
+    id: string
   }>
 }
 
@@ -35,8 +18,8 @@ export default function AdminPage({ params }: AdminPageProps) {
 
   useEffect(() => {
     const fetchProject = async () => {
-      const { slug } = await params
-      const projectData = getProject(slug)
+      const { id } = await params
+      const projectData = await fetchProjectById(id)
       
       if (!projectData) {
         notFound()
@@ -62,7 +45,7 @@ export default function AdminPage({ params }: AdminPageProps) {
   }
 
   const handleBack = () => {
-    router.push(`/project/${project.slug}`)
+    router.push(`/project/${project.id}`)
   }
 
   return (

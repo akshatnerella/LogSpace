@@ -36,7 +36,7 @@ export function ProjectHeader({ project }: ProjectHeaderProps) {
             </a>
             
             <div className="flex items-center gap-2">
-              <a href={`/project/${project.slug}/admin`}>
+              <a href={`/project/${project.id}/admin`}>
                 <Button
                   variant="ghost"
                   className="text-text-secondary hover:text-foreground min-h-[44px]"

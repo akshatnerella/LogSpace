@@ -282,7 +282,7 @@ export default function ProfilePage({ profile, isOwnProfile = false, onBack }: P
                       {project.logCount} logs
                     </div>
                     <button
-                      onClick={() => router.push(`/project/${project.slug}`)}
+                      onClick={() => router.push(`/project/${project.id}`)}
                       className="px-3 py-1 text-sm bg-primary/10 text-primary rounded-lg hover:bg-primary/20 transition-colors duration-200"
                     >
                       View Project

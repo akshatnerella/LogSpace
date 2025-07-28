@@ -1,6 +1,6 @@
 import './globals.css'
 import type { Metadata } from 'next'
-import { AuthProvider } from '@/components/AuthProvider'
+import { AuthProvider } from '@/lib/auth'
 
 export const metadata: Metadata = {
   title: 'logspace - Build in Public. Stay Accountable. Get Discovered.',

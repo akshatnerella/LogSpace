@@ -89,8 +89,8 @@ export function ProjectAdminPage({ project, onBack }: ProjectAdminPageProps) {
   const [isSaving, setIsSaving] = useState(false)
   const [copiedLink, setCopiedLink] = useState<string | null>(null)
 
-  const publicUrl = `https://logspace.dev/project/${project.slug}`
-  const inviteUrl = `https://logspace.dev/invite/${project.slug}?token=abc123xyz`
+  const publicUrl = `https://logspace.dev/project/${project.id}`
+  const inviteUrl = `https://logspace.dev/invite/${project.id}?token=abc123xyz`
 
   const handleRoleChange = async (collaboratorId: string, newRole: 'admin' | 'viewer') => {
     setCollaborators(prev => 

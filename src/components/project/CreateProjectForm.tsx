@@ -2,8 +2,8 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { useSession } from 'next-auth/react'
-import { useApiClient } from '../../lib/use-api-client'
+import { useAuth } from '@/lib/auth'
+import { createProject } from '@/lib/queries'
 import { Button } from '../Button'
 import { ArrowLeft, Plus, Eye, Lock } from 'lucide-react'
 import { SignInModal } from '../auth/SignInModal'
@@ -30,11 +30,10 @@ export function CreateProjectForm() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showSignInModal, setShowSignInModal] = useState(false)
   const nameInputRef = useRef<HTMLInputElement>(null)
-  const apiClient = useApiClient()
   const router = useRouter()
-  const { data: session, status } = useSession()
+  const { user, loading } = useAuth()
   
-  const isAuthenticated = status === 'authenticated'
+  const isAuthenticated = !!user
 
   // Auto-focus on name field
   useEffect(() => {
@@ -72,14 +71,18 @@ export function CreateProjectForm() {
     setErrors({})
     
     try {
-      const project = await apiClient.createProject({
-        name: formData.name.trim(),
+      const project = await createProject({
+        title: formData.name.trim(),
         description: formData.description.trim() || undefined,
-        is_public: formData.visibility === 'public'
+        visibility: formData.visibility
       })
       
+      if (!project) {
+        throw new Error('Failed to create project')
+      }
+      
       // Redirect to project page
-      router.push(`/project/${project.slug}`)
+      router.push(`/project/${project.id}`)
       
     } catch (error: any) {
       console.error('Error creating project:', error)

@@ -7,22 +7,22 @@ import { TextLogForm } from '@/components/project/TextLogForm'
 import { VisualLogForm } from '@/components/project/VisualLogForm'
 
 interface CreateLogPageProps {
-  params: {
-    slug: string
-  }
+  params: Promise<{
+    id: string
+  }>
 }
 
 export default function CreateLogPage({ params }: CreateLogPageProps) {
   const [selectedType, setSelectedType] = useState<'text' | 'visual' | 'code' | null>(null)
   const [showSelector, setShowSelector] = useState(true)
-  const [projectSlug, setProjectSlug] = useState<string>('')
+  const [projectId, setProjectId] = useState<string>('')
   const router = useRouter()
 
-  // Extract slug from params
+  // Extract id from params
   useEffect(() => {
     const getParams = async () => {
-      const { slug } = await params
-      setProjectSlug(slug)
+      const { id } = await params
+      setProjectId(id)
     }
     getParams()
   }, [params])
@@ -37,7 +37,7 @@ export default function CreateLogPage({ params }: CreateLogPageProps) {
       setSelectedType(null)
       setShowSelector(true)
     } else {
-      router.push(`/project/${projectSlug}`)
+      router.push(`/project/${projectId}`)
     }
   }
 
@@ -53,7 +53,7 @@ export default function CreateLogPage({ params }: CreateLogPageProps) {
       alert('Text log published successfully!')
       
       // Redirect back to project
-      router.push(`/project/${projectSlug}`)
+      router.push(`/project/${projectId}`)
     } catch (error) {
       console.error('Failed to create text log:', error)
       alert('Failed to publish log. Please try again.')
@@ -72,7 +72,7 @@ export default function CreateLogPage({ params }: CreateLogPageProps) {
       alert('Visual log published successfully!')
       
       // Redirect back to project
-      router.push(`/project/${projectSlug}`)
+      router.push(`/project/${projectId}`)
     } catch (error) {
       console.error('Failed to create visual log:', error)
       alert('Failed to publish log. Please try again.')
@@ -80,11 +80,11 @@ export default function CreateLogPage({ params }: CreateLogPageProps) {
   }
 
   const handleCloseSelector = () => {
-    router.push(`/project/${projectSlug}`)
+    router.push(`/project/${projectId}`)
   }
 
-  // Don't render until we have the slug
-  if (!projectSlug) {
+  // Don't render until we have the id
+  if (!projectId) {
     return <div className="min-h-screen bg-background flex items-center justify-center">
       <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full"></div>
     </div>
@@ -97,7 +97,7 @@ export default function CreateLogPage({ params }: CreateLogPageProps) {
         isOpen={true}
         onClose={handleCloseSelector}
         onSelectType={handleSelectType}
-        projectSlug={projectSlug}
+        projectId={projectId}
       />
     )
   }
@@ -106,7 +106,7 @@ export default function CreateLogPage({ params }: CreateLogPageProps) {
   if (selectedType === 'text') {
     return (
       <TextLogForm
-        projectSlug={projectSlug}
+        projectId={projectId}
         onBack={handleBack}
         onSubmit={handleTextLogSubmit}
       />
@@ -116,7 +116,7 @@ export default function CreateLogPage({ params }: CreateLogPageProps) {
   if (selectedType === 'visual') {
     return (
       <VisualLogForm
-        projectSlug={projectSlug}
+        projectId={projectId}
         onBack={handleBack}
         onSubmit={handleVisualLogSubmit}
       />
@@ -129,7 +129,7 @@ export default function CreateLogPage({ params }: CreateLogPageProps) {
       isOpen={true}
       onClose={handleCloseSelector}
       onSelectType={handleSelectType}
-      projectSlug={projectSlug}
+      projectId={projectId}
     />
   )
 }
