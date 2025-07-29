@@ -4,12 +4,12 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useAuth } from '@/lib/auth'
 import { supabase } from '@/lib/supabaseClient'
-import { DashboardLayout } from '@/components/dashboard/DashboardLayout'
+import { HomeLayout } from '@/components/home/HomeLayout'
 import { usePendingProject } from '@/hooks/usePendingProject'
-import { fetchUserProjects } from '@/lib/queries'
+import { fetchUserProjects, fetchUserProjectsWithCollaborators } from '@/lib/queries'
 import { Project } from '@/types/database'
 
-export function DashboardClient() {
+export function HomeClient() {
   const { user, loading: authLoading } = useAuth()
   const [projects, setProjects] = useState<Project[]>([])
   const [loading, setLoading] = useState(true)
@@ -32,8 +32,8 @@ export function DashboardClient() {
           
           console.log('Debug direct query result:', { debugProjects, debugError })
           
-          const { data: userProjects } = await fetchUserProjects()
-          console.log('Fetched projects via fetchUserProjects:', userProjects)
+          const userProjects = await fetchUserProjectsWithCollaborators()
+          console.log('Fetched projects with collaborators:', userProjects)
           setProjects(userProjects)
         } catch (error) {
           console.error('Error fetching projects:', error)
@@ -47,6 +47,29 @@ export function DashboardClient() {
 
     loadProjects()
   }, [user, authLoading])
+
+  // Refresh projects when page becomes visible (e.g., when navigating back from project creation)
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden && user?.id) {
+        console.log('Page became visible, refreshing projects...')
+        // Re-fetch projects
+        const refreshProjects = async () => {
+          try {
+            const userProjects = await fetchUserProjectsWithCollaborators()
+            console.log('Refreshed projects:', userProjects)
+            setProjects(userProjects)
+          } catch (error) {
+            console.error('Error refreshing projects:', error)
+          }
+        }
+        refreshProjects()
+      }
+    }
+
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange)
+  }, [user])
 
   // Show loading state while authenticating
   if (authLoading) {
@@ -66,17 +89,17 @@ export function DashboardClient() {
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-xl font-semibold text-foreground mb-2">Access Denied</h2>
-          <p className="text-text-secondary mb-4">Please sign in to view your dashboard.</p>
+          <p className="text-text-secondary mb-4">Please sign in to view your home.</p>
           <Link 
             href="/" 
             className="inline-flex items-center px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
           >
-            Go to Home
+            Sign In
           </Link>
         </div>
       </div>
     )
   }
 
-  return <DashboardLayout projects={projects} loading={loading} />
+  return <HomeLayout projects={projects} loading={loading} />
 }

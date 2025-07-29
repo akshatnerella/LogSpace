@@ -71,15 +71,25 @@ export function CreateProjectForm() {
     setErrors({})
     
     try {
+      console.log('Creating project with data:', {
+        title: formData.name.trim(),
+        description: formData.description.trim() || undefined,
+        visibility: formData.visibility
+      })
+      
       const project = await createProject({
         title: formData.name.trim(),
         description: formData.description.trim() || undefined,
         visibility: formData.visibility
       })
       
+      console.log('Project creation result:', project)
+      
       if (!project) {
         throw new Error('Failed to create project')
       }
+      
+      console.log('Redirecting to project:', `/project/${project.id}`)
       
       // Redirect to project page
       router.push(`/project/${project.id}`)
@@ -251,6 +261,11 @@ export function CreateProjectForm() {
         isOpen={showSignInModal}
         onClose={() => setShowSignInModal(false)}
         redirectTo="/create-project"
+        pendingProjectData={{
+          name: formData.name.trim(),
+          description: formData.description.trim(),
+          visibility: formData.visibility
+        }}
       />
     </div>
   )

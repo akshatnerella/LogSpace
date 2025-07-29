@@ -43,9 +43,9 @@ export function Footer() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-8 lg:gap-8 mb-8 sm:mb-12">
           {/* Brand */}
           <div className="sm:col-span-2 lg:col-span-2">
-            <Link href="/" className="flex items-center space-x-2 mb-4 sm:mb-6">
-              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                <span className="text-background font-bold text-lg">L</span>
+            <Link href="/" className="flex items-center space-x-2 mb-4 sm:mb-6 hover:opacity-80 transition-opacity">
+              <div className="w-10 h-10 rounded-lg overflow-hidden">
+                <img src="/logo.png" alt="LogSpace" className="w-full h-full object-contain" />
               </div>
               <span className="text-xl font-bold text-foreground">LogSpace</span>
             </Link>

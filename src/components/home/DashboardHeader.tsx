@@ -1,4 +1,5 @@
 import { Bell, Search, User } from 'lucide-react'
+import Link from 'next/link'
 import { Button } from '../Button'
 
 export function DashboardHeader() {
@@ -6,12 +7,12 @@ export function DashboardHeader() {
     <header className="border-b border-border bg-background/80 backdrop-blur-xl sticky top-0 z-40">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 h-14 sm:h-16 flex items-center justify-between">
         {/* Logo */}
-        <div className="flex items-center space-x-2">
-          <div className="w-7 h-7 sm:w-8 sm:h-8 bg-primary rounded-lg flex items-center justify-center">
-            <span className="text-background font-bold text-base sm:text-lg">L</span>
+        <Link href="/dashboard" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
+          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg overflow-hidden">
+            <img src="/logo.png" alt="LogSpace" className="w-full h-full object-contain" />
           </div>
           <span className="text-lg sm:text-xl font-bold text-foreground">LogSpace</span>
-        </div>
+        </Link>
 
         {/* Search Bar - Hidden on small screens */}
         <div className="hidden lg:flex items-center flex-1 max-w-lg mx-8">

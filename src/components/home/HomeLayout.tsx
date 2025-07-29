@@ -17,24 +17,30 @@ import {
   User,
   ChevronDown,
   Globe,
-  Lock
+  Lock,
+  Filter,
+  SortAsc,
+  SortDesc
 } from 'lucide-react'
 import { Button } from '../Button'
 import { useAuth } from '@/lib/auth'
 import { Project } from '@/types/database'
 import { generateSlug, formatRelativeTime } from '@/lib/utils'
 
-interface DashboardLayoutProps {
+interface HomeLayoutProps {
   projects: Project[]
   loading: boolean
 }
 
 type SidebarSection = 'projects' | 'activity' | 'settings'
 
-export function DashboardLayout({ projects, loading }: DashboardLayoutProps) {
+export function HomeLayout({ projects, loading }: HomeLayoutProps) {
   const [activeSection, setActiveSection] = useState<SidebarSection>('projects')
   const [searchQuery, setSearchQuery] = useState('')
   const [showProfileMenu, setShowProfileMenu] = useState(false)
+  const [sortBy, setSortBy] = useState<'updated_at' | 'created_at' | 'title'>('updated_at')
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc')
+  const [filterVisibility, setFilterVisibility] = useState<'all' | 'public' | 'private'>('all')
   const { user, signOut } = useAuth()
 
   const sidebarItems = [
@@ -43,10 +49,35 @@ export function DashboardLayout({ projects, loading }: DashboardLayoutProps) {
     { id: 'settings' as const, icon: Settings, label: 'Settings' }
   ]
 
-  const filteredProjects = projects.filter(project =>
-    project.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    project.description?.toLowerCase().includes(searchQuery.toLowerCase())
-  )
+  const filteredProjects = projects
+    .filter(project => {
+      // Search filter
+      const matchesSearch = project.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        project.description?.toLowerCase().includes(searchQuery.toLowerCase())
+      
+      // Visibility filter
+      const matchesVisibility = filterVisibility === 'all' || project.visibility === filterVisibility
+      
+      return matchesSearch && matchesVisibility
+    })
+    .sort((a, b) => {
+      let comparison = 0
+      
+      switch (sortBy) {
+        case 'title':
+          comparison = a.title.localeCompare(b.title)
+          break
+        case 'created_at':
+          comparison = new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+          break
+        case 'updated_at':
+        default:
+          comparison = new Date(a.updated_at).getTime() - new Date(b.updated_at).getTime()
+          break
+      }
+      
+      return sortOrder === 'desc' ? -comparison : comparison
+    })
 
   const getProjectStatus = (project: Project) => {
     // You can customize this logic based on your needs
@@ -65,12 +96,12 @@ export function DashboardLayout({ projects, loading }: DashboardLayoutProps) {
         <div className="flex items-center justify-between h-full px-6">
           {/* Left side - Logo and Title */}
           <div className="flex items-center space-x-4">
-            <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                <span className="text-background font-bold text-lg">L</span>
+            <Link href="/home" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
+              <div className="w-10 h-10 rounded-lg overflow-hidden">
+                <img src="/logo.png" alt="LogSpace" className="w-full h-full object-contain" />
               </div>
               <span className="text-xl font-semibold text-foreground">LogSpace</span>
-            </div>
+            </Link>
           </div>
 
           {/* Center - Search Bar */}
@@ -104,11 +135,24 @@ export function DashboardLayout({ projects, loading }: DashboardLayoutProps) {
                 onClick={() => setShowProfileMenu(!showProfileMenu)}
                 className="flex items-center space-x-2 p-2 text-text-secondary hover:text-foreground hover:bg-surface rounded-lg transition-colors"
               >
-                <img
-                  src={user?.user_metadata?.avatar_url || "/default-avatar.png"}
-                  alt={user?.user_metadata?.full_name || 'User'}
-                  className="w-8 h-8 rounded-full"
-                />
+                {user?.user_metadata?.avatar_url ? (
+                  <img
+                    src={user.user_metadata.avatar_url}
+                    alt={user?.user_metadata?.full_name || 'User'}
+                    className="w-8 h-8 rounded-full object-cover"
+                    onError={(e) => {
+                      // Fallback to initials avatar if image fails to load
+                      const target = e.target as HTMLImageElement
+                      target.style.display = 'none'
+                      target.nextElementSibling?.classList.remove('hidden')
+                    }}
+                  />
+                ) : null}
+                <div className={`w-8 h-8 rounded-full bg-primary flex items-center justify-center text-background font-semibold text-sm ${user?.user_metadata?.avatar_url ? 'hidden' : ''}`}>
+                  {user?.user_metadata?.full_name?.charAt(0)?.toUpperCase() || 
+                   user?.email?.charAt(0)?.toUpperCase() || 
+                   'U'}
+                </div>
                 <ChevronDown className="w-4 h-4" />
               </button>
 
@@ -209,14 +253,43 @@ export function DashboardLayout({ projects, loading }: DashboardLayoutProps) {
                     }
                   </p>
                 </div>
-                <Button href="/create-project" className="flex items-center space-x-2">
-                  <Plus className="w-4 h-4" />
-                  <span>New Project</span>
-                </Button>
+                
+                {/* Filters and Sort */}
+                <div className="flex items-center gap-2">
+                  {/* Visibility Filter */}
+                  <select
+                    value={filterVisibility}
+                    onChange={(e) => setFilterVisibility(e.target.value as 'all' | 'public' | 'private')}
+                    className="px-3 py-2 bg-surface border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                    aria-label="Filter projects by visibility"
+                  >
+                    <option value="all">All Projects</option>
+                    <option value="public">Public Only</option>
+                    <option value="private">Private Only</option>
+                  </select>
+                  
+                  {/* Sort Options */}
+                  <select
+                    value={`${sortBy}-${sortOrder}`}
+                    onChange={(e) => {
+                      const [field, order] = e.target.value.split('-')
+                      setSortBy(field as 'updated_at' | 'created_at' | 'title')
+                      setSortOrder(order as 'asc' | 'desc')
+                    }}
+                    className="px-3 py-2 bg-surface border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                    aria-label="Sort projects"
+                  >
+                    <option value="updated_at-desc">Recently Updated</option>
+                    <option value="created_at-desc">Recently Created</option>
+                    <option value="title-asc">Name A-Z</option>
+                    <option value="title-desc">Name Z-A</option>
+                    <option value="created_at-asc">Oldest First</option>
+                  </select>
+                </div>
               </div>
 
               {/* Projects Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
                 {/* New Project Tile - only show when not searching */}
                 {!searchQuery && (
                   <motion.div
@@ -227,15 +300,25 @@ export function DashboardLayout({ projects, loading }: DashboardLayoutProps) {
                     <Button
                       href="/create-project"
                       variant="ghost"
-                      className="w-full h-32 p-0 border-2 border-dashed border-border hover:border-primary/50 bg-transparent hover:bg-primary/5 transition-all duration-200 group"
+                      className="w-full h-40 p-0 border-2 border-dashed border-border hover:border-primary/70 bg-transparent hover:bg-primary/5 transition-all duration-200 group relative overflow-hidden"
                     >
-                      <div className="flex flex-col items-center justify-center space-y-2">
-                        <div className="w-10 h-10 rounded-full bg-surface group-hover:bg-primary/10 flex items-center justify-center transition-colors">
-                          <Plus className="w-5 h-5 text-text-secondary group-hover:text-primary" />
+                      <div className="flex flex-col items-center justify-center space-y-3">
+                        <div className="w-12 h-12 rounded-full bg-surface group-hover:bg-primary/10 flex items-center justify-center transition-all duration-200 group-hover:scale-110">
+                          <Plus className="w-6 h-6 text-text-secondary group-hover:text-primary transition-colors" />
                         </div>
-                        <span className="text-sm font-medium text-text-secondary group-hover:text-foreground">
-                          New Project
-                        </span>
+                        <div className="text-center">
+                          <span className="text-sm font-medium text-text-secondary group-hover:text-foreground transition-colors">
+                            Create New Project
+                          </span>
+                          <p className="text-xs text-text-secondary/70 mt-1">
+                            Start building something amazing
+                          </p>
+                        </div>
+                      </div>
+                      
+                      {/* Subtle background pattern */}
+                      <div className="absolute inset-0 opacity-0 group-hover:opacity-5 transition-opacity duration-200">
+                        <div className="w-full h-full bg-gradient-to-br from-primary/20 to-transparent" />
                       </div>
                     </Button>
                   </motion.div>
@@ -268,18 +351,29 @@ export function DashboardLayout({ projects, loading }: DashboardLayoutProps) {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3, delay: 0.2 }}
-                    className="col-span-full flex flex-col items-center justify-center py-12 text-center"
+                    className="col-span-full flex flex-col items-center justify-center py-16 text-center"
                   >
-                    <div className="w-16 h-16 bg-surface rounded-full flex items-center justify-center mb-4">
-                      <FolderOpen className="w-8 h-8 text-text-secondary" />
+                    <div className="relative mb-6">
+                      <div className="w-20 h-20 bg-gradient-to-br from-primary/20 to-primary/5 rounded-full flex items-center justify-center mb-4">
+                        <FolderOpen className="w-10 h-10 text-primary" />
+                      </div>
+                      <div className="absolute -top-2 -right-2 w-8 h-8 bg-surface border-2 border-background rounded-full flex items-center justify-center">
+                        <Plus className="w-4 h-4 text-primary" />
+                      </div>
                     </div>
-                    <h3 className="text-lg font-semibold text-foreground mb-2">No projects yet</h3>
-                    <p className="text-text-secondary mb-6 max-w-sm">
-                      Create your first project to start building in public and tracking your progress.
+                    <h3 className="text-xl font-semibold text-foreground mb-2">Ready to start building?</h3>
+                    <p className="text-text-secondary mb-8 max-w-md leading-relaxed">
+                      Create your first project to start building in public, track your progress, and share your journey with the world.
                     </p>
-                    <Button href="/create-project" className="bg-primary hover:bg-primary/90">
-                      Create Your First Project
-                    </Button>
+                    <div className="flex flex-col sm:flex-row gap-3">
+                      <Button href="/create-project" className="bg-primary hover:bg-primary/90 px-6 py-3">
+                        <Plus className="w-4 h-4 mr-2" />
+                        Create Your First Project
+                      </Button>
+                      <Button variant="ghost" className="px-6 py-3 text-text-secondary hover:text-foreground">
+                        Learn More
+                      </Button>
+                    </div>
                   </motion.div>
                 ) : (
                   filteredProjects.map((project, index) => (
@@ -291,7 +385,7 @@ export function DashboardLayout({ projects, loading }: DashboardLayoutProps) {
                     >
                       <Link
                         href={`/project/${project.id}`}
-                        className="block h-32 p-4 bg-surface border border-border rounded-lg hover:border-primary/50 hover:shadow-sm transition-all duration-200 group"
+                        className="block h-40 p-5 bg-surface border border-border rounded-lg hover:border-primary/50 hover:shadow-sm transition-all duration-200 group relative overflow-hidden"
                       >
                         <div className="flex flex-col justify-between h-full">
                           <div>
@@ -302,31 +396,78 @@ export function DashboardLayout({ projects, loading }: DashboardLayoutProps) {
                               <ChevronRight className="w-4 h-4 text-text-secondary group-hover:text-primary transition-colors flex-shrink-0 ml-2" />
                             </div>
                             
-                            <p className="text-sm text-text-secondary line-clamp-1 mb-3">
-                              {project.description || 'No description'}
+                            <p className="text-sm text-text-secondary mb-3 overflow-hidden">
+                              <span className="line-clamp-1 break-words leading-relaxed">
+                                {project.description && project.description.length > 80 
+                                  ? `${project.description.substring(0, 80)}...`
+                                  : project.description || 'No description'
+                                }
+                              </span>
                             </p>
+                          </div>
+
+                          <div className="space-y-3">
+                            {/* Collaborators Preview */}
+                            {project.project_collaborators && project.project_collaborators.length > 0 && (
+                              <div className="flex items-center gap-2">
+                                <div className="flex -space-x-2">
+                                  {project.project_collaborators.slice(0, 3).map((collaborator: any, idx: number) => (
+                                    <div
+                                      key={collaborator.id}
+                                      className="relative"
+                                      title={`${collaborator.users?.name || collaborator.users?.email} (${collaborator.role})`}
+                                    >
+                                      {collaborator.users?.avatar_url ? (
+                                        <img
+                                          src={collaborator.users.avatar_url}
+                                          alt={collaborator.users.name || collaborator.users.email}
+                                          className="w-6 h-6 rounded-full border-2 border-background object-cover"
+                                        />
+                                      ) : (
+                                        <div className="w-6 h-6 rounded-full border-2 border-background bg-primary flex items-center justify-center text-background text-xs font-semibold">
+                                          {collaborator.users?.name?.charAt(0)?.toUpperCase() || 
+                                           collaborator.users?.email?.charAt(0)?.toUpperCase() || 
+                                           'U'}
+                                        </div>
+                                      )}
+                                    </div>
+                                  ))}
+                                  {project.project_collaborators.length > 3 && (
+                                    <div 
+                                      className="w-6 h-6 rounded-full border-2 border-background bg-text-secondary text-background flex items-center justify-center text-xs font-semibold"
+                                      title={`+${project.project_collaborators.length - 3} more`}
+                                    >
+                                      +{project.project_collaborators.length - 3}
+                                    </div>
+                                  )}
+                                </div>
+                                <span className="text-xs text-text-secondary">
+                                  {project.project_collaborators.length} {project.project_collaborators.length === 1 ? 'collaborator' : 'collaborators'}
+                                </span>
+                              </div>
+                            )}
                             
                             <div className="flex items-center justify-between">
                               <div className="flex items-center gap-2">
                                 {project.visibility === 'public' ? (
-                                  <div className="flex items-center gap-1 px-2 py-1 border border-border text-text-secondary rounded text-xs">
+                                  <span className="flex items-center gap-1 px-2 py-1 border border-border text-text-secondary rounded text-xs">
                                     <Globe className="w-3 h-3" />
                                     Public
-                                  </div>
+                                  </span>
                                 ) : (
-                                  <div className="flex items-center gap-1 px-2 py-1 border border-border text-text-secondary rounded text-xs">
+                                  <span className="flex items-center gap-1 px-2 py-1 border border-border text-text-secondary rounded text-xs">
                                     <Lock className="w-3 h-3" />
                                     Private
-                                  </div>
+                                  </span>
                                 )}
-                                <div className="px-2 py-1 border border-border text-text-secondary rounded text-xs">
+                                <span className="px-2 py-1 border border-border text-text-secondary rounded text-xs">
                                   Owner
-                                </div>
+                                </span>
                               </div>
                               
-                              <div className="flex items-center space-x-2 text-xs text-text-secondary">
+                              <div className="flex items-center gap-1.5 text-xs text-text-secondary ml-4">
                                 <Clock className="w-3 h-3" />
-                                <span>{formatRelativeTime(project.created_at)}</span>
+                                <span>Updated {formatRelativeTime(project.updated_at)}</span>
                               </div>
                             </div>
                           </div>

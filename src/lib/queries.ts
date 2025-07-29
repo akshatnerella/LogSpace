@@ -155,6 +155,92 @@ export async function fetchProjectBySlug(slug: string): Promise<ProjectWithStats
   }
 }
 
+export async function fetchUserProjectsWithCollaborators(): Promise<Project[]> {
+  try {
+    const { data: { user } } = await supabase.auth.getUser()
+    
+    if (!user) {
+      return []
+    }
+
+    // First get the user's projects
+    const { data: projects, error: projectsError } = await supabase
+      .from('projects')
+      .select('*')
+      .eq('created_by', user.id)
+      .eq('status', 'active')
+      .order('updated_at', { ascending: false })
+
+    if (projectsError) {
+      console.error('Error fetching projects:', projectsError)
+      console.error('Error details:', projectsError.details)
+      console.error('Error hint:', projectsError.hint)
+      console.error('Error message:', projectsError.message)
+      return []
+    }
+
+    if (!projects || projects.length === 0) {
+      return []
+    }
+
+    // Get collaborators for all projects (simplified query)
+    const projectIds = projects.map(p => p.id)
+    const { data: collaborators, error: collabError } = await supabase
+      .from('project_collaborators')
+      .select('*')
+      .in('project_id', projectIds)
+      .eq('status', 'accepted')
+
+    if (collabError) {
+      console.error('Error fetching collaborators:', collabError)
+      console.error('Error details:', collabError.details)
+      console.error('Error hint:', collabError.hint)
+      console.error('Error message:', collabError.message)
+      // Return projects without collaborator data rather than failing completely
+      return projects.map(project => ({
+        ...project,
+        project_collaborators: []
+      }))
+    }
+
+    // Get user details for collaborators
+    let collaboratorsWithUsers = []
+    if (collaborators && collaborators.length > 0) {
+      const userIds = collaborators.map(c => c.user_id)
+      const { data: users, error: usersError } = await supabase
+        .from('users')
+        .select('id, name, email, avatar_url')
+        .in('id', userIds)
+
+      if (usersError) {
+        console.error('Error fetching user details:', usersError)
+        // Still include collaborators without user details
+        collaboratorsWithUsers = collaborators.map(collab => ({
+          ...collab,
+          users: null
+        }))
+      } else {
+        // Combine collaborators with user data
+        collaboratorsWithUsers = collaborators.map(collab => ({
+          ...collab,
+          users: users?.find(user => user.id === collab.user_id) || null
+        }))
+      }
+    }
+
+    // Combine projects with their collaborators
+    const projectsWithCollaborators = projects.map(project => ({
+      ...project,
+      project_collaborators: collaboratorsWithUsers?.filter(collab => collab.project_id === project.id) || []
+    }))
+
+    return projectsWithCollaborators
+  } catch (error) {
+    console.error('Error in fetchUserProjectsWithCollaborators:', error)
+    return []
+  }
+}
+
 export async function fetchUserProjects(
   filters: ProjectFilters = {},
   sort: ProjectSortOptions = { field: 'updated_at', direction: 'desc' },
@@ -365,43 +451,114 @@ export async function createProject(data: CreateProjectData): Promise<Project | 
   try {
     const { data: { user } } = await supabase.auth.getUser()
     
+    console.log('createProject - Current user:', user?.id)
+    console.log('createProject - Project data:', data)
+    
     if (!user) {
       throw new Error('User not authenticated')
     }
 
-    // Generate slug from title
-    const slug = data.title
+    // Ensure user exists in users table first
+    const { data: existingUser, error: userError } = await supabase
+      .from('users')
+      .select('id')
+      .eq('id', user.id)
+      .single()
+    
+    if (userError && userError.code === 'PGRST116') {
+      // User doesn't exist, create them
+      console.log('createProject - Creating user record')
+      const { error: insertUserError } = await supabase
+        .from('users')
+        .insert({
+          id: user.id,
+          name: user.user_metadata?.full_name || user.email?.split('@')[0] || '',
+          email: user.email || '',
+          avatar_url: user.user_metadata?.avatar_url
+        })
+      
+      if (insertUserError) {
+        console.error('Error creating user:', insertUserError)
+        throw insertUserError
+      }
+    } else if (userError) {
+      console.error('Error checking user:', userError)
+      throw userError
+    }
+
+    // Generate unique slug from title
+    let slug = data.title
       .toLowerCase()
       .replace(/[^a-z0-9\s-]/g, '')
       .replace(/\s+/g, '-')
       .trim()
 
+    // Check if slug already exists and make it unique
+    let uniqueSlug = slug
+    let counter = 1
+    while (true) {
+      const { data: existingProject } = await supabase
+        .from('projects')
+        .select('id')
+        .eq('slug', uniqueSlug)
+        .single()
+      
+      if (!existingProject) break
+      
+      uniqueSlug = `${slug}-${counter}`
+      counter++
+    }
+
+    const projectData = {
+      title: data.title,
+      description: data.description,
+      visibility: data.visibility,
+      tags: data.tags || [],
+      project_settings: data.project_settings || {},
+      created_by: user.id,
+      slug: uniqueSlug,
+      status: 'active'
+    }
+    
+    console.log('createProject - Inserting project:', projectData)
+
     const { data: project, error } = await supabase
       .from('projects')
-      .insert({
-        ...data,
-        created_by: user.id,
-        slug: slug
-      })
+      .insert(projectData)
       .select()
       .single()
 
     if (error) {
       console.error('Error creating project:', error)
+      console.error('Error details:', error.details)
+      console.error('Error hint:', error.hint)
+      console.error('Error message:', error.message)
       return null
     }
 
-    // Add creator as admin collaborator
-    await supabase
-      .from('project_collaborators')
-      .insert({
-        project_id: project.id,
-        user_id: user.id,
-        role: 'admin',
-        status: 'accepted',
-        joined_at: new Date().toISOString()
-      })
+    console.log('createProject - Project created:', project)
 
+    // Add creator as admin collaborator
+    const collaboratorData = {
+      project_id: project.id,
+      user_id: user.id,
+      role: 'admin',
+      status: 'accepted',
+      joined_at: new Date().toISOString()
+    }
+    
+    console.log('createProject - Adding collaborator:', collaboratorData)
+    
+    const { error: collaboratorError } = await supabase
+      .from('project_collaborators')
+      .insert(collaboratorData)
+      
+    if (collaboratorError) {
+      console.error('Error adding collaborator:', collaboratorError)
+      // Don't fail the project creation if collaborator addition fails
+    }
+
+    console.log('createProject - Complete, returning project:', project)
     return project
   } catch (error) {
     console.error('Unexpected error creating project:', error)

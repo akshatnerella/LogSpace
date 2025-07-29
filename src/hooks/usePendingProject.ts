@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react'
 import { useAuth } from '@/lib/auth'
-import { createProject, upsertUser } from '../lib/database'
+import { createProject } from '@/lib/queries'
 import { useRouter } from 'next/navigation'
 
 interface PendingProjectData {
@@ -21,17 +21,7 @@ export function usePendingProject() {
       if (loading || !user) return
 
       try {
-        console.log('User authenticated, creating/updating user record:', user)
-        
-        // Ensure user exists in database
-        await upsertUser({
-          id: user.id,
-          name: user.user_metadata?.full_name || user.email?.split('@')[0] || '',
-          email: user.email || '',
-          avatar_url: user.user_metadata?.avatar_url || undefined,
-        })
-
-        console.log('User record created/updated successfully')
+        console.log('User authenticated, checking for pending project data')
 
         // Check for pending project data
         const pendingDataString = localStorage.getItem('pendingProjectData')
@@ -40,28 +30,40 @@ export function usePendingProject() {
         const pendingData: PendingProjectData = JSON.parse(pendingDataString)
         
         console.log('Creating pending project:', pendingData)
+        console.log('Current user:', user)
         
-        // Create the project
+        // Create the project using the updated API
         const project = await createProject({
           title: pendingData.name.trim(),
           description: pendingData.description.trim() || undefined,
-          is_public: pendingData.visibility === 'public'
-        }, user.id)
+          visibility: pendingData.visibility
+        })
+        
+        console.log('Project creation result:', project)
         
         // Clear the pending data
         localStorage.removeItem('pendingProjectData')
         
-        console.log('Pending project created successfully:', project)
+        console.log('Pending project created successfully, project ID:', project?.id)
         
-        // Refresh the page to show the new project
-        window.location.reload()
+        if (project) {
+          // Navigate to the created project
+          console.log('Navigating to project:', `/project/${project.id}`)
+          router.push(`/project/${project.id}`)
+        } else {
+          // If creation failed, go to dashboard
+          console.log('Project creation failed, going to dashboard')
+          router.push('/dashboard')
+        }
         
       } catch (error) {
-        console.error('Error creating pending project or user:', error)
+        console.error('Error creating pending project:', error)
         // Keep the data in localStorage for retry
+        // Navigate to dashboard anyway
+        router.push('/dashboard')
       }
     }
 
     createPendingProject()
-  }, [loading, user])
+  }, [loading, user, router])
 }

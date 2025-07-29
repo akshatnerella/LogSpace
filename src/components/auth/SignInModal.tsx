@@ -50,9 +50,9 @@ export function SignInModal({ isOpen, onClose, redirectTo, pendingProjectData }:
   return (
     <>
       {/* Desktop/Tablet Modal */}
-      <div className="hidden sm:fixed sm:inset-0 sm:bg-black/60 sm:flex sm:items-center sm:justify-center sm:p-4 sm:z-50">
+      <div className="hidden sm:fixed sm:inset-0 sm:bg-black/60 sm:flex sm:items-center sm:justify-center sm:p-4 sm:z-[60]">
         <div className="bg-surface border border-border rounded-2xl w-full max-w-md shadow-2xl animate-scale-in">
-          <div className="p-8 relative">
+          <div className="p-6 sm:p-8 relative">
             {/* Close button */}
             <button
               onClick={onClose}
@@ -63,23 +63,23 @@ export function SignInModal({ isOpen, onClose, redirectTo, pendingProjectData }:
             </button>
 
             {/* Header */}
-            <div className="mb-6">
-              <h2 className="text-xl font-semibold text-foreground mb-2">
+            <div className="mb-4 sm:mb-6">
+              <h2 className="text-lg sm:text-xl font-semibold text-foreground mb-2">
                 One step away from showing your greatness.
               </h2>
-              <p className="text-text-secondary text-sm">
+              <p className="text-text-secondary text-xs sm:text-sm">
                 We know logins are annoying — but it helps us track your achievements and celebrate them with the world.
               </p>
             </div>
 
             {/* OAuth Buttons */}
-            <div className="space-y-4 mb-6">
+            <div className="space-y-3 sm:space-y-4 mb-4 sm:mb-6">
               {/* Google Login Button */}
               <Button
                 onClick={handleOAuthLogin}
                 disabled={isLoading}
                 variant="ghost"
-                className="w-full h-12 bg-surface border border-border hover:bg-surface-light hover:border-primary hover:shadow-lg hover:shadow-primary/20 text-foreground transition-all duration-200 font-medium"
+                className="w-full h-11 sm:h-12 bg-surface border border-border hover:bg-surface-light hover:border-primary hover:shadow-lg hover:shadow-primary/20 text-foreground transition-all duration-200 font-medium text-sm sm:text-base"
               >
                 {isLoading ? (
                   <>
@@ -102,8 +102,8 @@ export function SignInModal({ isOpen, onClose, redirectTo, pendingProjectData }:
 
             {/* Error Message */}
             {error && (
-              <div className="mb-6 p-3 bg-red-500/10 border border-red-500/20 rounded-xl">
-                <p className="text-red-400 text-sm text-center">{error}</p>
+              <div className="mb-4 sm:mb-6 p-3 bg-red-500/10 border border-red-500/20 rounded-xl">
+                <p className="text-red-400 text-xs sm:text-sm text-center">{error}</p>
               </div>
             )}
           </div>
@@ -111,9 +111,9 @@ export function SignInModal({ isOpen, onClose, redirectTo, pendingProjectData }:
       </div>
 
       {/* Mobile Modal */}
-      <div className="sm:hidden fixed inset-0 bg-background z-50 animate-slide-up">
+      <div className="sm:hidden fixed inset-0 bg-background z-[60] animate-slide-up">
         <div className="flex flex-col h-full">
-          <div className="p-6 border-b border-border bg-surface-light">
+          <div className="p-4 border-b border-border bg-surface-light">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-semibold text-foreground">
                 One step away from showing your greatness.
@@ -128,13 +128,12 @@ export function SignInModal({ isOpen, onClose, redirectTo, pendingProjectData }:
             </div>
           </div>
           
-          <div className="flex-1 p-6">
+          <div className="flex-1 p-4 pb-safe">
             <p className="text-text-secondary text-sm mb-6">
               We know logins are annoying — but it helps us track your achievements and celebrate them with the world.
             </p>
 
             <div className="space-y-4">
-              {/* Google Button */}
               <Button
                 onClick={handleOAuthLogin}
                 disabled={isLoading}
@@ -160,7 +159,6 @@ export function SignInModal({ isOpen, onClose, redirectTo, pendingProjectData }:
               </Button>
             </div>
 
-            {/* Error Message */}
             {error && (
               <div className="mt-6 p-3 bg-red-500/10 border border-red-500/20 rounded-xl">
                 <p className="text-red-400 text-sm text-center">{error}</p>

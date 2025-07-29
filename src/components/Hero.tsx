@@ -1,10 +1,10 @@
 import { Button } from './Button'
-import { ArrowRight, Play } from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
 import Link from 'next/link'
 
 export function Hero() {
   return (
-    <section className="relative overflow-hidden py-8 sm:py-12 lg:py-16 xl:py-20">
+    <section className="relative overflow-hidden py-12 sm:py-16 lg:py-20 xl:py-24">
       {/* Background gradient */}
       <div className="absolute inset-0 bg-gradient-to-br from-primary-muted/20 via-background to-accent-muted/20" />
       
@@ -13,30 +13,28 @@ export function Hero() {
           {/* Left Column - Text */}
           <div className="space-y-6 sm:space-y-8 animate-fade-in text-center lg:text-left">
             <div className="space-y-4 sm:space-y-6">
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight text-foreground">
-                Build in Public.{' '}
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold leading-tight text-foreground">
                 <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-                  Stay Accountable.
+                  Log the Grind.
                 </span>{' '}
-                Get Discovered.
+                Show the Climb.
               </h1>
-              <p className="text-base sm:text-lg lg:text-xl text-text-secondary leading-relaxed max-w-2xl mx-auto lg:mx-0">
-                LogSpace helps creators and indie hackers share progress, ideas, and projects in public. 
-                Turn your building journey into your competitive advantage.
+              <p className="text-lg sm:text-xl lg:text-2xl text-text-secondary leading-relaxed max-w-3xl mx-auto lg:mx-0">
+                Log your work in public, share ideas, track your journey, and let others follow your build. Turn your progress into your competitive advantage.
               </p>
             </div>
             
-            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 items-center lg:items-start">
+            <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 items-center lg:items-start">
               <Link href="/create-project">
-                <Button variant="primary" size="lg" className="group w-full sm:w-auto min-h-[48px]">
+                <Button variant="primary" size="lg" className="group w-full sm:w-auto min-h-[52px] px-8 text-lg font-semibold shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200">
                   Start Building
-                  <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5 group-hover:translate-x-1 transition-transform" />
+                  <ArrowRight className="ml-3 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </Link>
-              <Link href="/dashboard">
-                <Button variant="ghost" size="lg" className="group w-full sm:w-auto min-h-[48px]">
-                  <Play className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
-                  Explore Logs
+              <Link href="/home">
+                <Button variant="ghost" size="lg" className="group w-full sm:w-auto min-h-[52px] px-8 text-lg font-medium border-2 border-border hover:border-primary hover:bg-primary/5 transition-all duration-200">
+                  Discover Projects
+                  <ArrowRight className="ml-3 h-5 w-5 group-hover:translate-x-1 transition-transform opacity-70 group-hover:opacity-100" />
                 </Button>
               </Link>
             </div>

@@ -1,4 +1,4 @@
-// UPDATED DATABASE TYPES - Matching the new schema exactly
+// UPDATED DATABASE TYPES - Matching the exact schema provided
 
 export interface User {
   id: string;
@@ -20,6 +20,8 @@ export interface Project {
   slug?: string;
   project_settings: Record<string, any>;
   tags?: string[];
+  // Optional collaborators data for dashboard display
+  project_collaborators?: ProjectCollaborator[];
 }
 
 export interface ProjectCollaborator {

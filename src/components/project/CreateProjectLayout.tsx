@@ -31,7 +31,11 @@ export function CreateProjectLayout() {
   }, [])
 
   const handleBack = () => {
-    router.push('/dashboard')
+    if (isAuthenticated) {
+      router.push('/home')
+    } else {
+      router.push('/')
+    }
   }
 
   return (
@@ -55,7 +59,7 @@ export function CreateProjectLayout() {
             className="mb-8 text-text-secondary hover:text-foreground group"
           >
             <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform duration-200" />
-            Back to Dashboard
+            {isAuthenticated ? 'Back to Home' : 'Back'}
           </Button>
         </div>
       </motion.div>
@@ -129,7 +133,7 @@ export function CreateProjectLayout() {
       <SignInModal
         isOpen={showSignInModal}
         onClose={() => setShowSignInModal(false)}
-        redirectTo="/dashboard"
+        redirectTo="/home"
         pendingProjectData={pendingProjectData}
       />
     </div>
