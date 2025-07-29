@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useAuth } from '@/lib/auth'
 import { supabase } from '@/lib/supabaseClient'
 import { HomeLayout } from '@/components/home/HomeLayout'
+import { SignInModal } from '@/components/auth/SignInModal'
 import { usePendingProject } from '@/hooks/usePendingProject'
 import { fetchUserProjects, fetchUserProjectsWithCollaborators } from '@/lib/queries'
 import { Project } from '@/types/database'
@@ -13,6 +14,7 @@ export function HomeClient() {
   const { user, loading: authLoading } = useAuth()
   const [projects, setProjects] = useState<Project[]>([])
   const [loading, setLoading] = useState(true)
+  const [showSignInModal, setShowSignInModal] = useState(false)
 
   // Handle any pending project creation after authentication
   usePendingProject()
@@ -86,18 +88,25 @@ export function HomeClient() {
   // Redirect to home if not authenticated
   if (!user) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-xl font-semibold text-foreground mb-2">Access Denied</h2>
-          <p className="text-text-secondary mb-4">Please sign in to view your home.</p>
-          <Link 
-            href="/" 
-            className="inline-flex items-center px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
-          >
-            Sign In
-          </Link>
+      <>
+        <div className="min-h-screen bg-background flex items-center justify-center">
+          <div className="text-center">
+            <h2 className="text-xl font-semibold text-foreground mb-2">Access Denied</h2>
+            <p className="text-text-secondary mb-4">Please sign in to view your home.</p>
+            <button 
+              onClick={() => setShowSignInModal(true)}
+              className="inline-flex items-center px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
+            >
+              Sign In
+            </button>
+          </div>
         </div>
-      </div>
+        
+        <SignInModal 
+          isOpen={showSignInModal} 
+          onClose={() => setShowSignInModal(false)} 
+        />
+      </>
     )
   }
 
