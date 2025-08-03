@@ -1,54 +1,100 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
-# Agent OS
+# Agent OS - Development only
 .agent-os/
 
-#Environment
+# Environment variables - NEVER commit these
 .env
+.env*
+.env.local
+.env.development
+.env.development.local
+.env.test
+.env.test.local
+.env.production
+.env.production.local
 
 # Dependencies
 node_modules/
 /.pnp
 .pnp.js
 .yarn/install-state.gz
+package-lock.json
+yarn.lock
+.npm/
+.pnpm/
 
 # Testing
 /coverage
+*.test.ts
+*.test.tsx
+__tests__/
+tests/
+test/
+*.spec.ts
+*.spec.tsx
+.nyc_output/
+jest.config.*
 
 # Next.js
 /.next/
 /out/
 next-env.d.ts
+.next
 
-# Production
+# Production builds
 /build
 /dist
-
-# Environment variables
-.env
-.env*.local
-.env.development.local
-.env.test.local
-.env.production.local
-
-# Vercel
-.vercel
+*.tgz
 
 # TypeScript
 *.tsbuildinfo
+*.d.ts.map
 
-# ESLint
+# ESLint & Prettier
 .eslintcache
+.prettierignore
+.eslintignore
 
-# Turbo
-.turbo
+# Logs - Security sensitive
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+pnpm-debug.log*
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Database dumps and backups
+*.sql
+*.db
+*.sqlite
+*.sqlite3
+*.dump
+
+# Temporary files
+tmp/
+temp/
+.tmp/
 
 # IDEs and editors
 .vscode/
+!.vscode/extensions.json
 .idea/
 *.swp
 *.swo
 *~
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
 
 # OS generated files
 .DS_Store
@@ -58,43 +104,69 @@ next-env.d.ts
 .Trashes
 ehthumbs.db
 Thumbs.db
+desktop.ini
 
-# Logs
-logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-lerna-debug.log*
+# Deployment platforms
+.vercel/
+.netlify/
+.firebase/
+.serverless/
+.amplify/
 
-# Runtime data
-pids
-*.pid
-*.seed
-*.pid.lock
+# Analytics and monitoring
+.sentry/
 
-# Optional npm cache directory
-.npm
+# Cache directories
+.cache/
+.parcel-cache/
+.turbo/
+.swc/
+
+# Package manager lockfiles (optional - uncomment if needed)
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml
+
+# Yarn
+.yarn-integrity
+.pnp.*
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
 
 # Optional REPL history
 .node_repl_history
 
-# Output of 'npm pack'
-*.tgz
+# Microbundle cache
+.rpt2_cache/
+.rts2_cache_cjs/
+.rts2_cache_es/
+.rts2_cache_umd/
 
-# Yarn Integrity file
-.yarn-integrity
+# Optional coverage reports
+coverage/
+.nyc_output
+*.lcov
 
-# Temporary folders
-tmp/
-temp/
+# Storybook build outputs
+.out
+.storybook-out
+storybook-static/
 
-# Editor directories and files
-.vscode/
-!.vscode/extensions.json
-.idea
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
+# Tailwind CSS
+tailwindcss*.map
+
+# Documentation that shouldn't be in production
+DATABASE_REQUIREMENTS.md
+DEPLOYMENT.md
+*.md.backup
+
+# Backup files
+*.backup
+*.bak
+*.orig
+
+# Development tools
+.webpack/
+.rollup.cache/
