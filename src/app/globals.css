@@ -8,6 +8,17 @@ html {
   font-family: 'Inter', system-ui, sans-serif;
 }
 
+/* Force dark mode defaults */
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
 /* Line clamp utility */
 .line-clamp-2 {
   display: -webkit-box;
