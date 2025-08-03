@@ -2,12 +2,12 @@
 
 import { useState } from 'react'
 import { ArrowLeft, Eye, Lock, Calendar, BarChart3, Share2, Settings } from 'lucide-react'
-import { Project } from '../../lib/use-api-client'
+import { ProjectWithStats } from '../../types/database'
 import { Button } from '../Button'
 import { ShareLinkModal } from './ShareLinkModal'
 
 interface ProjectHeaderProps {
-  project: Project
+  project: ProjectWithStats
 }
 
 export function ProjectHeader({ project }: ProjectHeaderProps) {
@@ -25,10 +25,10 @@ export function ProjectHeader({ project }: ProjectHeaderProps) {
         {/* Navigation */}
         <div className="mb-6">
           <div className="flex items-center justify-between">
-            <a href="/dashboard">
+            <a href="/home">
               <Button
                 variant="ghost"
-                className="text-text-secondary hover:text-foreground min-h-[44px]"
+                className="text-muted-foreground hover:text-foreground min-h-[44px]"
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back to Dashboard
@@ -39,7 +39,7 @@ export function ProjectHeader({ project }: ProjectHeaderProps) {
               <a href={`/project/${project.id}/admin`}>
                 <Button
                   variant="ghost"
-                  className="text-text-secondary hover:text-foreground min-h-[44px]"
+                  className="text-muted-foreground hover:text-foreground min-h-[44px]"
                 >
                   <Settings className="w-4 h-4 mr-2" />
                   Settings
@@ -49,7 +49,7 @@ export function ProjectHeader({ project }: ProjectHeaderProps) {
               <Button
                 variant="ghost"
                 onClick={() => setIsShareModalOpen(true)}
-                className="text-text-secondary hover:text-foreground min-h-[44px]"
+                className="text-muted-foreground hover:text-foreground min-h-[44px]"
               >
                 <Share2 className="w-4 h-4 mr-2" />
                 Share
@@ -76,31 +76,31 @@ export function ProjectHeader({ project }: ProjectHeaderProps) {
           <div>
             <div className="flex items-center gap-3 mb-2">
               <h1 className="text-2xl sm:text-3xl font-bold text-foreground">
-                {project.name}
+                {project.title}
               </h1>
               <div className="flex items-center gap-2 px-3 py-1 bg-background rounded-full">
-                {project.is_public ? (
+                {project.visibility === 'public' ? (
                   <>
                     <Eye className="w-4 h-4 text-primary" />
                     <span className="text-sm font-medium text-primary">Public</span>
                   </>
                 ) : (
                   <>
-                    <Lock className="w-4 h-4 text-text-secondary" />
-                    <span className="text-sm font-medium text-text-secondary">Private</span>
+                    <Lock className="w-4 h-4 text-muted-foreground" />
+                    <span className="text-sm font-medium text-muted-foreground">Private</span>
                   </>
                 )}
               </div>
             </div>
             
             {project.description && (
-              <p className="text-text-secondary text-base sm:text-lg mb-4">
+              <p className="text-muted-foreground text-base sm:text-lg mb-4">
                 {project.description}
               </p>
             )}
             
             {/* Metadata */}
-            <div className="flex flex-wrap items-center gap-4 sm:gap-6 text-sm text-text-secondary">
+            <div className="flex flex-wrap items-center gap-4 sm:gap-6 text-sm text-muted-foreground">
               <div className="flex items-center gap-2">
                 <Calendar className="w-4 h-4" />
                 <span>Created {createdDate}</span>
@@ -121,7 +121,11 @@ export function ProjectHeader({ project }: ProjectHeaderProps) {
       <ShareLinkModal
         isOpen={isShareModalOpen}
         onClose={() => setIsShareModalOpen(false)}
-        project={project}
+        project={{
+          id: project.id,
+          name: project.title,
+          slug: project.slug
+        }}
       />
     </div>
   )

@@ -56,7 +56,7 @@ export function SignInModal({ isOpen, onClose, redirectTo, pendingProjectData }:
             {/* Close button */}
             <button
               onClick={onClose}
-              className="absolute top-4 right-4 p-2 text-text-secondary hover:text-foreground transition-colors"
+              className="absolute top-4 right-4 p-2 text-muted-foreground hover:text-foreground transition-colors"
               aria-label="Close modal"
             >
               <X className="w-4 h-4" />
@@ -67,7 +67,7 @@ export function SignInModal({ isOpen, onClose, redirectTo, pendingProjectData }:
               <h2 className="text-lg sm:text-xl font-semibold text-foreground mb-2">
                 One step away from showing your greatness.
               </h2>
-              <p className="text-text-secondary text-xs sm:text-sm">
+              <p className="text-muted-foreground text-xs sm:text-sm">
                 We know logins are annoying — but it helps us track your achievements and celebrate them with the world.
               </p>
             </div>
@@ -120,7 +120,7 @@ export function SignInModal({ isOpen, onClose, redirectTo, pendingProjectData }:
               </h2>
               <button
                 onClick={onClose}
-                className="p-2 text-text-secondary hover:text-foreground transition-colors"
+                className="p-2 text-muted-foreground hover:text-foreground transition-colors"
                 aria-label="Close modal"
               >
                 <X className="w-5 h-5" />
@@ -129,7 +129,7 @@ export function SignInModal({ isOpen, onClose, redirectTo, pendingProjectData }:
           </div>
           
           <div className="flex-1 p-4 pb-safe">
-            <p className="text-text-secondary text-sm mb-6">
+            <p className="text-muted-foreground text-sm mb-6">
               We know logins are annoying — but it helps us track your achievements and celebrate them with the world.
             </p>
 

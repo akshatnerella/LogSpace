@@ -50,7 +50,7 @@ export function Navbar() {
               <Link
                 key={item.name}
                 href={item.href}
-                className="text-text-secondary hover:text-foreground transition-colors font-medium whitespace-nowrap"
+                className="text-muted-foreground hover:text-foreground transition-colors font-medium whitespace-nowrap"
               >
                 {item.name}
               </Link>
@@ -109,7 +109,7 @@ export function Navbar() {
 
           {/* Mobile menu button - show on tablet and mobile */}
           <button
-            className="lg:hidden p-2 text-text-secondary hover:text-foreground flex-shrink-0"
+            className="lg:hidden p-2 text-muted-foreground hover:text-foreground flex-shrink-0"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
             {mobileMenuOpen ? (
@@ -132,7 +132,7 @@ export function Navbar() {
                 <span className="text-lg font-bold text-foreground">LogSpace</span>
               </Link>
               <button
-                className="p-2 text-text-secondary hover:text-foreground transition-colors"
+                className="p-2 text-muted-foreground hover:text-foreground transition-colors"
                 onClick={() => setMobileMenuOpen(false)}
                 aria-label="Close menu"
               >
@@ -172,7 +172,7 @@ export function Navbar() {
                         handleSignOut()
                         setMobileMenuOpen(false)
                       }}
-                      className="flex items-center justify-center py-3 text-base font-medium text-text-secondary hover:text-foreground transition-colors border border-border rounded-lg hover:bg-surface w-full"
+                      className="flex items-center justify-center py-3 text-base font-medium text-muted-foreground hover:text-foreground transition-colors border border-border rounded-lg hover:bg-surface w-full"
                     >
                       Sign out
                     </button>
@@ -184,7 +184,7 @@ export function Navbar() {
                         setShowSignInModal(true)
                         setMobileMenuOpen(false)
                       }}
-                      className="flex items-center justify-center py-3 text-base font-medium text-text-secondary hover:text-foreground transition-colors border border-border rounded-lg hover:bg-surface w-full"
+                      className="flex items-center justify-center py-3 text-base font-medium text-muted-foreground hover:text-foreground transition-colors border border-border rounded-lg hover:bg-surface w-full"
                     >
                       Sign in
                     </button>

@@ -132,7 +132,7 @@ export function CreateProjectForm() {
               if (errors.name) setErrors(prev => ({ ...prev, name: undefined }))
             }}
             placeholder="e.g. AI Resume Bot"
-            className={`w-full px-4 py-3 sm:px-5 sm:py-4 bg-background border rounded-xl text-foreground placeholder-text-secondary focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200 text-base sm:text-lg font-medium ${
+            className={`w-full px-4 py-3 sm:px-5 sm:py-4 bg-background border rounded-xl text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200 text-base sm:text-lg font-medium ${
               errors.name ? 'border-red-500 focus:ring-red-500' : 'border-border hover:border-border-hover'
             }`}
             maxLength={50}
@@ -140,7 +140,7 @@ export function CreateProjectForm() {
           {errors.name && (
             <p className="text-red-500 text-sm animate-fade-in">{errors.name}</p>
           )}
-          <p className="text-xs text-text-secondary">
+          <p className="text-xs text-muted-foreground">
             {formData.name.length}/50 characters
           </p>
         </div>
@@ -157,9 +157,9 @@ export function CreateProjectForm() {
             placeholder="What's this project about?"
             rows={3}
             maxLength={200}
-            className="w-full px-4 py-3 sm:px-5 sm:py-4 bg-background border border-border hover:border-border-hover rounded-xl text-foreground placeholder-text-secondary focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200 text-sm sm:text-base resize-none"
+            className="w-full px-4 py-3 sm:px-5 sm:py-4 bg-background border border-border hover:border-border-hover rounded-xl text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200 text-sm sm:text-base resize-none"
           />
-          <p className="text-xs text-text-secondary">
+          <p className="text-xs text-muted-foreground">
             {formData.description.length}/200 characters
           </p>
         </div>
@@ -189,7 +189,7 @@ export function CreateProjectForm() {
               <Eye className="w-4 h-4 sm:w-5 sm:h-5 text-primary mr-3" />
               <div className="flex-1">
                 <div className="font-medium text-foreground text-sm sm:text-base">Public</div>
-                <div className="text-xs sm:text-sm text-text-secondary">Anyone can see this project</div>
+                <div className="text-xs sm:text-sm text-muted-foreground">Anyone can see this project</div>
               </div>
             </label>
 
@@ -209,14 +209,14 @@ export function CreateProjectForm() {
                   <div className="w-2 h-2 bg-background rounded-full" />
                 )}
               </div>
-              <Lock className="w-4 h-4 sm:w-5 sm:h-5 text-text-secondary mr-3" />
+              <Lock className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground mr-3" />
               <div className="flex-1">
                 <div className="font-medium text-foreground text-sm sm:text-base">Private</div>
-                <div className="text-xs sm:text-sm text-text-secondary">Only you can see this project</div>
+                <div className="text-xs sm:text-sm text-muted-foreground">Only you can see this project</div>
               </div>
             </label>
           </div>
-          <p className="text-xs text-text-secondary">
+          <p className="text-xs text-muted-foreground">
             You can change this later
           </p>
         </div>

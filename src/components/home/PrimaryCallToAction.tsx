@@ -17,7 +17,7 @@ export function PrimaryCallToAction() {
       </a>
 
       {/* Secondary Link */}
-      <div className="text-sm sm:text-base text-text-secondary">
+      <div className="text-sm sm:text-base text-muted-foreground">
         or{' '}
         <button className="text-primary hover:text-primary-dark font-medium transition-colors duration-200 underline underline-offset-2 hover:underline-offset-4 min-h-[44px] px-2">
           explore the community

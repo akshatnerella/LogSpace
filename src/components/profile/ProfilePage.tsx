@@ -89,7 +89,7 @@ export default function ProfilePage({ profile, isOwnProfile = false, onBack }: P
               className="p-2 hover:bg-surface-light rounded-lg transition-colors duration-200"
               aria-label="Go back"
             >
-              <ArrowLeft className="w-5 h-5 text-text-secondary" />
+              <ArrowLeft className="w-5 h-5 text-muted-foreground" />
             </button>
             <div className="text-sm font-medium text-foreground">
               {profile.name}
@@ -123,7 +123,7 @@ export default function ProfilePage({ profile, isOwnProfile = false, onBack }: P
                 <h1 className="text-2xl font-bold text-foreground mb-1">
                   {profile.name}
                 </h1>
-                <p className="text-text-secondary">@{profile.handle}</p>
+                <p className="text-muted-foreground">@{profile.handle}</p>
               </div>
 
               {/* Bio */}
@@ -134,7 +134,7 @@ export default function ProfilePage({ profile, isOwnProfile = false, onBack }: P
               )}
 
               {/* Links & Join Date */}
-              <div className="flex flex-wrap items-center gap-4 text-sm text-text-secondary">
+              <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
                 {profile.website && (
                   <a
                     href={profile.website}
@@ -177,7 +177,7 @@ export default function ProfilePage({ profile, isOwnProfile = false, onBack }: P
             <div className="text-2xl font-bold text-foreground mb-1">
               {formatNumber(profile.stats.totalProjects)}
             </div>
-            <div className="text-sm text-text-secondary">Projects</div>
+            <div className="text-sm text-muted-foreground">Projects</div>
           </div>
 
           <div className="bg-surface border border-border rounded-xl p-4 text-center">
@@ -187,7 +187,7 @@ export default function ProfilePage({ profile, isOwnProfile = false, onBack }: P
             <div className="text-2xl font-bold text-foreground mb-1">
               {formatNumber(profile.stats.totalLogs)}
             </div>
-            <div className="text-sm text-text-secondary">Logs</div>
+            <div className="text-sm text-muted-foreground">Logs</div>
           </div>
 
           <div className="bg-surface border border-border rounded-xl p-4 text-center">
@@ -197,7 +197,7 @@ export default function ProfilePage({ profile, isOwnProfile = false, onBack }: P
             <div className="text-2xl font-bold text-foreground mb-1">
               {formatNumber(profile.stats.views)}
             </div>
-            <div className="text-sm text-text-secondary">Views</div>
+            <div className="text-sm text-muted-foreground">Views</div>
           </div>
         </div>
 
@@ -225,7 +225,7 @@ export default function ProfilePage({ profile, isOwnProfile = false, onBack }: P
               <h3 className="text-lg font-medium text-foreground mb-2">
                 {isOwnProfile ? "No public projects yet" : `${profile.name} hasn't shared any projects yet`}
               </h3>
-              <p className="text-text-secondary mb-6 max-w-md mx-auto">
+              <p className="text-muted-foreground mb-6 max-w-md mx-auto">
                 {isOwnProfile 
                   ? "Get started by creating your first project and sharing your work with the community!"
                   : "Check back later to see what they're building."
@@ -253,7 +253,7 @@ export default function ProfilePage({ profile, isOwnProfile = false, onBack }: P
                     <h3 className="font-semibold text-foreground mb-2 group-hover:text-primary transition-colors duration-200">
                       {project.title}
                     </h3>
-                    <p className="text-sm text-text-secondary line-clamp-2 leading-relaxed">
+                    <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed">
                       {project.description}
                     </p>
                   </div>
@@ -263,13 +263,13 @@ export default function ProfilePage({ profile, isOwnProfile = false, onBack }: P
                       {project.tags.slice(0, 3).map((tag) => (
                         <span
                           key={tag}
-                          className="px-2 py-1 text-xs bg-surface-light text-text-secondary rounded-md"
+                          className="px-2 py-1 text-xs bg-surface-light text-muted-foreground rounded-md"
                         >
                           {tag}
                         </span>
                       ))}
                       {project.tags.length > 3 && (
-                        <span className="px-2 py-1 text-xs text-text-secondary">
+                        <span className="px-2 py-1 text-xs text-muted-foreground">
                           +{project.tags.length - 3}
                         </span>
                       )}
@@ -277,7 +277,7 @@ export default function ProfilePage({ profile, isOwnProfile = false, onBack }: P
                   )}
 
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-1 text-sm text-text-secondary">
+                    <div className="flex items-center gap-1 text-sm text-muted-foreground">
                       <FileText className="w-4 h-4" />
                       {project.logCount} logs
                     </div>

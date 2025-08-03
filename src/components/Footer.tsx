@@ -49,7 +49,7 @@ export function Footer() {
               </div>
               <span className="text-xl font-bold text-foreground">LogSpace</span>
             </Link>
-            <p className="text-text-secondary mb-4 sm:mb-6 max-w-sm text-sm sm:text-base">
+            <p className="text-muted-foreground mb-4 sm:mb-6 max-w-sm text-sm sm:text-base">
               The simplest way to build in public. Share your journey, connect with builders, and grow your projects transparently.
             </p>
             
@@ -63,7 +63,7 @@ export function Footer() {
                     href={social.href}
                     className="w-10 h-10 bg-background border border-border rounded-lg flex items-center justify-center hover:border-border-hover hover:bg-surface-hover transition-colors min-h-[44px]"
                   >
-                    <Icon className="w-4 h-4 sm:w-5 sm:h-5 text-text-secondary" />
+                    <Icon className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground" />
                   </Link>
                 )
               })}
@@ -79,7 +79,7 @@ export function Footer() {
                   <li key={item.name}>
                     <Link 
                       href={item.href}
-                      className="text-text-secondary hover:text-foreground transition-colors text-sm sm:text-base flex items-center min-h-[44px]"
+                      className="text-muted-foreground hover:text-foreground transition-colors text-sm sm:text-base flex items-center min-h-[44px]"
                     >
                       {item.name}
                     </Link>
@@ -95,7 +95,7 @@ export function Footer() {
                   <li key={item.name}>
                     <Link 
                       href={item.href}
-                      className="text-text-secondary hover:text-foreground transition-colors text-sm sm:text-base flex items-center min-h-[44px]"
+                      className="text-muted-foreground hover:text-foreground transition-colors text-sm sm:text-base flex items-center min-h-[44px]"
                     >
                       {item.name}
                     </Link>
@@ -111,7 +111,7 @@ export function Footer() {
                   <li key={item.name}>
                     <Link 
                       href={item.href}
-                      className="text-text-secondary hover:text-foreground transition-colors text-sm sm:text-base flex items-center min-h-[44px]"
+                      className="text-muted-foreground hover:text-foreground transition-colors text-sm sm:text-base flex items-center min-h-[44px]"
                     >
                       {item.name}
                     </Link>
@@ -127,7 +127,7 @@ export function Footer() {
                   <li key={item.name}>
                     <Link 
                       href={item.href}
-                      className="text-text-secondary hover:text-foreground transition-colors text-sm sm:text-base flex items-center min-h-[44px]"
+                      className="text-muted-foreground hover:text-foreground transition-colors text-sm sm:text-base flex items-center min-h-[44px]"
                     >
                       {item.name}
                     </Link>
@@ -140,11 +140,11 @@ export function Footer() {
 
         {/* Bottom bar */}
         <div className="pt-6 sm:pt-8 border-t border-border flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
-          <p className="text-text-secondary text-xs sm:text-sm text-center sm:text-left">
+          <p className="text-muted-foreground text-xs sm:text-sm text-center sm:text-left">
             © 2024 LogSpace. All rights reserved.
           </p>
           <div className="flex items-center space-x-6">
-            <span className="text-text-secondary text-xs sm:text-sm text-center sm:text-right">
+            <span className="text-muted-foreground text-xs sm:text-sm text-center sm:text-right">
               Made with ❤️ by builders, for builders
             </span>
           </div>

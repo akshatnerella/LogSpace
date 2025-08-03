@@ -14,7 +14,7 @@ export default function NotFound() {
           <h1 className="text-3xl font-bold text-foreground">
             Page not found
           </h1>
-          <p className="text-text-secondary leading-relaxed">
+          <p className="text-muted-foreground leading-relaxed">
             Sorry, we couldn&apos;t find the page you&apos;re looking for. 
             It might have been moved, deleted, or you entered the wrong URL.
           </p>

@@ -28,7 +28,7 @@ export function VisibilityToggle({ value, onChange, onFocus, onBlur, focused }: 
         </div>
         <div>
           <h3 className="text-base font-semibold text-foreground">Visibility</h3>
-          <p className="text-xs text-text-secondary">Who can see your project?</p>
+          <p className="text-xs text-muted-foreground">Who can see your project?</p>
         </div>
       </div>
 
@@ -76,7 +76,7 @@ export function VisibilityToggle({ value, onChange, onFocus, onBlur, focused }: 
             </div>
             <div className="flex-1">
               <div className="font-medium text-foreground text-sm">Public</div>
-              <div className="text-xs text-text-secondary">Anyone can discover and view your project</div>
+              <div className="text-xs text-muted-foreground">Anyone can discover and view your project</div>
             </div>
           </div>
           
@@ -136,7 +136,7 @@ export function VisibilityToggle({ value, onChange, onFocus, onBlur, focused }: 
             </div>
             <div className="flex-1">
               <div className="font-medium text-foreground text-sm">Private</div>
-              <div className="text-xs text-text-secondary">Only you can access and view this project</div>
+              <div className="text-xs text-muted-foreground">Only you can access and view this project</div>
             </div>
           </div>
           
@@ -154,7 +154,7 @@ export function VisibilityToggle({ value, onChange, onFocus, onBlur, focused }: 
         </motion.label>
       </div>
 
-      <p className="text-xs text-text-secondary mt-3 text-center">
+      <p className="text-xs text-muted-foreground mt-3 text-center">
         You can change this anytime from your project settings
       </p>
     </motion.div>

@@ -3,6 +3,7 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabaseClient'
 import { User, Session } from '@supabase/supabase-js'
+import { ensureUserExists } from '@/lib/userManagement'
 
 interface AuthContextType {
   user: User | null
@@ -21,9 +22,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
+      console.log('Initial session check:', session?.user?.id)
       setSession(session)
       setUser(session?.user ?? null)
+      
+      // Create user in database if they're already authenticated
+      if (session?.user) {
+        try {
+          console.log('Creating user in database from initial session...')
+          await ensureUserExists()
+          console.log('User created/updated in database successfully')
+        } catch (error) {
+          console.error('Error creating user in database from initial session:', error)
+        }
+      }
+      
       setLoading(false)
     })
 
@@ -31,8 +45,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('Auth state changed:', event, session?.user?.id)
       setSession(session)
       setUser(session?.user ?? null)
+      
+      // Create user in database when they sign in
+      if (event === 'SIGNED_IN' && session?.user) {
+        try {
+          console.log('Creating user in database after sign in...')
+          await ensureUserExists()
+          console.log('User created/updated in database successfully')
+        } catch (error) {
+          console.error('Error creating user in database:', error)
+        }
+      }
+      
       setLoading(false)
     })
 

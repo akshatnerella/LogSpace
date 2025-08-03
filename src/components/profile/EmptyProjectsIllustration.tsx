@@ -25,7 +25,7 @@ export default function EmptyProjectsIllustration() {
         height="35"
         rx="4"
         fill="currentColor"
-        className="text-text-secondary opacity-30"
+        className="text-muted-foreground opacity-30"
       />
       
       {/* Folder Tab */}
@@ -36,7 +36,7 @@ export default function EmptyProjectsIllustration() {
         height="8"
         rx="2"
         fill="currentColor"
-        className="text-text-secondary opacity-40"
+        className="text-muted-foreground opacity-40"
       />
       
       {/* Plus Icon */}

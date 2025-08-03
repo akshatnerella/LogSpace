@@ -182,7 +182,7 @@ export function ShareLinkModal({ isOpen, onClose, project }: ShareLinkModalProps
               <h2 className="text-xl sm:text-2xl font-bold text-foreground">
                 Share Project
               </h2>
-              <p className="text-sm text-text-secondary mt-1">
+              <p className="text-sm text-muted-foreground mt-1">
                 Share {project.name} with the world or invite collaborators
               </p>
             </div>
@@ -191,7 +191,7 @@ export function ShareLinkModal({ isOpen, onClose, project }: ShareLinkModalProps
               className="p-2 hover:bg-surface-light rounded-lg transition-colors duration-200"
               aria-label="Close modal"
             >
-              <X className="w-5 h-5 text-text-secondary" />
+              <X className="w-5 h-5 text-muted-foreground" />
             </button>
           </div>
         </div>
@@ -207,7 +207,7 @@ export function ShareLinkModal({ isOpen, onClose, project }: ShareLinkModalProps
               </h3>
             </div>
             
-            <p className="text-sm text-text-secondary leading-relaxed">
+            <p className="text-sm text-muted-foreground leading-relaxed">
               Anyone can view this project&apos;s public dashboard. Use it to showcase progress, 
               highlight milestones, and share your build journey.
             </p>
@@ -238,7 +238,7 @@ export function ShareLinkModal({ isOpen, onClose, project }: ShareLinkModalProps
                   </button>
                   <button
                     disabled
-                    className="px-3 py-2 text-sm font-medium text-text-secondary bg-surface-light rounded-md cursor-not-allowed opacity-50"
+                    className="px-3 py-2 text-sm font-medium text-muted-foreground bg-surface-light rounded-md cursor-not-allowed opacity-50"
                   >
                     Regenerate Link
                   </button>
@@ -256,7 +256,7 @@ export function ShareLinkModal({ isOpen, onClose, project }: ShareLinkModalProps
               </h3>
             </div>
             
-            <p className="text-sm text-text-secondary leading-relaxed">
+            <p className="text-sm text-muted-foreground leading-relaxed">
               Share this special link with people you want to collaborate with. 
               They&apos;ll be able to join as contributors and help build your project.
             </p>
@@ -322,7 +322,7 @@ export function ShareLinkModal({ isOpen, onClose, project }: ShareLinkModalProps
                     placeholder="Enter email address"
                     value={inviteEmail}
                     onChange={(e) => setInviteEmail(e.target.value)}
-                    className="w-full bg-surface border border-border rounded-lg px-3 py-2 text-foreground placeholder-text-secondary focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors duration-200"
+                    className="w-full bg-surface border border-border rounded-lg px-3 py-2 text-foreground placeholder-muted-foreground focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors duration-200"
                   />
                 </div>
                 
@@ -337,7 +337,7 @@ export function ShareLinkModal({ isOpen, onClose, project }: ShareLinkModalProps
                     <option value="viewer">Viewer</option>
                     <option value="admin">Admin</option>
                   </select>
-                  <ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-text-secondary pointer-events-none" />
+                  <ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
                 </div>
 
                 <Button
@@ -381,7 +381,7 @@ export function ShareLinkModal({ isOpen, onClose, project }: ShareLinkModalProps
                           <p className="text-sm font-medium text-foreground">
                             {collaborator.name}
                           </p>
-                          <p className="text-xs text-text-secondary">
+                          <p className="text-xs text-muted-foreground">
                             {collaborator.email}
                           </p>
                         </div>
@@ -404,12 +404,12 @@ export function ShareLinkModal({ isOpen, onClose, project }: ShareLinkModalProps
                             <option value="viewer">Viewer</option>
                             <option value="admin">Admin</option>
                           </select>
-                          <ChevronDown className="absolute right-1 top-1/2 transform -translate-y-1/2 w-3 h-3 text-text-secondary pointer-events-none" />
+                          <ChevronDown className="absolute right-1 top-1/2 transform -translate-y-1/2 w-3 h-3 text-muted-foreground pointer-events-none" />
                         </div>
                         
                         <button
                           onClick={() => handleRemoveCollaborator(collaborator.id)}
-                          className="p-1.5 hover:bg-red-500/20 hover:text-red-400 text-text-secondary rounded-md transition-colors duration-200"
+                          className="p-1.5 hover:bg-red-500/20 hover:text-red-400 text-muted-foreground rounded-md transition-colors duration-200"
                           aria-label="Remove collaborator"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -424,7 +424,7 @@ export function ShareLinkModal({ isOpen, onClose, project }: ShareLinkModalProps
 
           {/* Info Box */}
           <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
-            <p className="text-sm text-text-secondary leading-relaxed">
+            <p className="text-sm text-muted-foreground leading-relaxed">
               <span className="font-medium text-primary">💡 Collaboration Info:</span> Invited users will be able to contribute to your project. 
               <strong className="text-foreground"> Admins</strong> can edit settings, logs, and manage other collaborators. 
               <strong className="text-foreground"> Viewers</strong> can only see internal updates.

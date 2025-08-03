@@ -38,7 +38,7 @@ export function Button({
   const variantClasses = {
     primary: 'bg-primary text-background hover:bg-primary-hover focus:ring-primary shadow-lg hover:shadow-xl hover:scale-105',
     secondary: 'bg-accent text-white hover:bg-accent-hover focus:ring-accent shadow-lg hover:shadow-xl hover:scale-105',
-    ghost: 'text-text-secondary hover:text-foreground hover:bg-surface-hover focus:ring-border',
+    ghost: 'text-muted-foreground hover:text-foreground hover:bg-surface-hover focus:ring-border',
     outline: 'border border-border text-foreground hover:bg-surface-hover focus:ring-border'
   }
   

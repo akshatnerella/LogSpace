@@ -56,7 +56,7 @@ export function CreateProjectLayout() {
           <Button
             variant="ghost"
             onClick={handleBack}
-            className="mb-8 text-text-secondary hover:text-foreground group"
+            className="mb-8 text-muted-foreground hover:text-foreground group"
           >
             <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform duration-200" />
             {isAuthenticated ? 'Back to Home' : 'Back'}
@@ -94,7 +94,7 @@ export function CreateProjectLayout() {
                 initial={{ opacity: 0, x: -30 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.8, delay: 0.8, ease: "easeOut" }}
-                className="text-sm sm:text-base text-text-secondary mt-1 sm:mt-2"
+                className="text-sm sm:text-base text-muted-foreground mt-1 sm:mt-2"
               >
                 Keep it simple. You can always tweak the details later.
               </motion.p>

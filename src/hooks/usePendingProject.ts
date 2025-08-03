@@ -53,14 +53,14 @@ export function usePendingProject() {
         } else {
           // If creation failed, go to dashboard
           console.log('Project creation failed, going to dashboard')
-          router.push('/dashboard')
+          router.push('/home')
         }
         
       } catch (error) {
         console.error('Error creating pending project:', error)
         // Keep the data in localStorage for retry
         // Navigate to dashboard anyway
-        router.push('/dashboard')
+        router.push('/home')
       }
     }
 

@@ -153,8 +153,8 @@ export function HowItWorks() {
           <h2 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold text-foreground mb-4 sm:mb-5">
             How It Works
           </h2>
-          <p className="text-base sm:text-lg lg:text-xl text-text-secondary max-w-3xl mx-auto leading-relaxed">
-            Just connect your tools. We'll build your public journey for you.
+          <p className="text-base sm:text-lg lg:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+            Just connect your tools. We&apos;ll build your public journey for you.
           </p>
         </motion.div>
         
@@ -199,7 +199,7 @@ export function HowItWorks() {
                     <h3 className="text-lg sm:text-xl font-bold text-foreground group-hover:text-primary transition-colors duration-300">
                       {step.title}
                     </h3>
-                    <p className="text-sm sm:text-base text-text-secondary leading-relaxed max-w-md mx-auto whitespace-pre-line">
+                    <p className="text-sm sm:text-base text-muted-foreground leading-relaxed max-w-md mx-auto whitespace-pre-line">
                       {step.description}
                     </p>
                   </div>

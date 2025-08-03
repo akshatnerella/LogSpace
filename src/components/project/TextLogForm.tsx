@@ -87,13 +87,13 @@ export function TextLogForm({ projectId, onBack, onSubmit }: TextLogFormProps) {
                 className="p-2 hover:bg-surface-light rounded-lg transition-colors duration-200"
                 aria-label="Go back"
               >
-                <ArrowLeft className="w-5 h-5 text-text-secondary" />
+                <ArrowLeft className="w-5 h-5 text-muted-foreground" />
               </button>
               <div>
                 <h1 className="text-lg sm:text-xl font-bold text-foreground">
                   New Text Log
                 </h1>
-                <p className="text-sm text-text-secondary">
+                <p className="text-sm text-muted-foreground">
                   Share your thoughts and progress
                 </p>
               </div>
@@ -106,9 +106,9 @@ export function TextLogForm({ projectId, onBack, onSubmit }: TextLogFormProps) {
                 aria-label={isPreview ? 'Edit mode' : 'Preview mode'}
               >
                 {isPreview ? (
-                  <EyeOff className="w-5 h-5 text-text-secondary" />
+                  <EyeOff className="w-5 h-5 text-muted-foreground" />
                 ) : (
-                  <Eye className="w-5 h-5 text-text-secondary" />
+                  <Eye className="w-5 h-5 text-muted-foreground" />
                 )}
               </button>
             </div>
@@ -127,11 +127,11 @@ export function TextLogForm({ projectId, onBack, onSubmit }: TextLogFormProps) {
               placeholder="What's this log about? (e.g., 'Fixed the login bug' or 'New feature idea')"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full text-xl sm:text-2xl font-semibold bg-transparent border-none outline-none text-foreground placeholder-text-secondary resize-none"
+              className="w-full text-xl sm:text-2xl font-semibold bg-transparent border-none outline-none text-foreground placeholder-muted-foreground resize-none"
               maxLength={120}
             />
             <div className="flex justify-between items-center mt-2">
-              <div className="text-xs text-text-secondary">
+              <div className="text-xs text-muted-foreground">
                 Title • {title.length}/120 characters
               </div>
             </div>
@@ -148,7 +148,7 @@ export function TextLogForm({ projectId, onBack, onSubmit }: TextLogFormProps) {
                   className="p-2 hover:bg-surface rounded-lg transition-colors duration-200"
                   aria-label="Bold text"
                 >
-                  <Bold className="w-4 h-4 text-text-secondary" />
+                  <Bold className="w-4 h-4 text-muted-foreground" />
                 </button>
                 <button
                   type="button"
@@ -156,7 +156,7 @@ export function TextLogForm({ projectId, onBack, onSubmit }: TextLogFormProps) {
                   className="p-2 hover:bg-surface rounded-lg transition-colors duration-200"
                   aria-label="Italic text"
                 >
-                  <Italic className="w-4 h-4 text-text-secondary" />
+                  <Italic className="w-4 h-4 text-muted-foreground" />
                 </button>
                 <button
                   type="button"
@@ -164,9 +164,9 @@ export function TextLogForm({ projectId, onBack, onSubmit }: TextLogFormProps) {
                   className="p-2 hover:bg-surface rounded-lg transition-colors duration-200"
                   aria-label="Insert link"
                 >
-                  <Link2 className="w-4 h-4 text-text-secondary" />
+                  <Link2 className="w-4 h-4 text-muted-foreground" />
                 </button>
-                <div className="ml-auto text-xs text-text-secondary">
+                <div className="ml-auto text-xs text-muted-foreground">
                   Markdown supported
                 </div>
               </div>
@@ -183,7 +183,7 @@ export function TextLogForm({ projectId, onBack, onSubmit }: TextLogFormProps) {
                       }}
                     />
                   ) : (
-                    <p className="text-text-secondary italic">
+                    <p className="text-muted-foreground italic">
                       Start typing to see your preview...
                     </p>
                   )}
@@ -194,7 +194,7 @@ export function TextLogForm({ projectId, onBack, onSubmit }: TextLogFormProps) {
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
                   rows={12}
-                  className="w-full bg-transparent border-none outline-none text-foreground placeholder-text-secondary resize-none leading-relaxed"
+                  className="w-full bg-transparent border-none outline-none text-foreground placeholder-muted-foreground resize-none leading-relaxed"
                 />
               )}
             </div>
@@ -203,7 +203,7 @@ export function TextLogForm({ projectId, onBack, onSubmit }: TextLogFormProps) {
           {/* Footer Actions */}
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-4 border-t border-border">
             <div className="flex-1">
-              <p className="text-xs text-text-secondary">
+              <p className="text-xs text-muted-foreground">
                 Your log will be visible to anyone following your project. 
                 <span className="font-medium text-foreground"> Keep it authentic!</span>
               </p>

@@ -7,7 +7,7 @@ import { Button } from '../Button'
 interface LogTypeSelectorProps {
   isOpen: boolean
   onClose: () => void
-  onSelectType: (type: 'text' | 'visual' | 'code') => void
+  onSelectType: (type: 'text' | 'image' | 'url') => void
   projectId: string
 }
 
@@ -25,7 +25,7 @@ const logTypes = [
     comingSoon: false
   },
   {
-    type: 'visual' as const,
+    type: 'image' as const,
     icon: Image,
     title: 'Visual Log',
     description: 'Upload images, videos, or screenshots with captions',
@@ -37,25 +37,25 @@ const logTypes = [
     comingSoon: false
   },
   {
-    type: 'code' as const,
+    type: 'url' as const,
     icon: Code,
-    title: 'Code Snapshot',
-    description: 'Share code snippets with syntax highlighting and context',
+    title: 'Link Log',
+    description: 'Share relevant links and resources with context',
     color: 'text-green-400',
     bgColor: 'bg-green-400/10',
     borderColor: 'border-green-400/20',
     hoverBg: 'hover:bg-green-400/20',
     isDefault: false,
-    comingSoon: true
+    comingSoon: false
   }
 ]
 
 export function LogTypeSelector({ isOpen, onClose, onSelectType, projectId }: LogTypeSelectorProps) {
-  const [selectedType, setSelectedType] = useState<'text' | 'visual' | 'code'>('text')
+  const [selectedType, setSelectedType] = useState<'text' | 'image' | 'url'>('text')
 
   if (!isOpen) return null
 
-  const handleSelectType = (type: 'text' | 'visual' | 'code') => {
+  const handleSelectType = (type: 'text' | 'image' | 'url') => {
     setSelectedType(type)
     const logType = logTypes.find(t => t.type === type)
     if (logType?.comingSoon) return
@@ -79,7 +79,7 @@ export function LogTypeSelector({ isOpen, onClose, onSelectType, projectId }: Lo
               <h2 className="text-xl sm:text-2xl font-bold text-foreground">
                 Choose Log Type
               </h2>
-              <p className="text-sm text-text-secondary mt-1">
+              <p className="text-sm text-muted-foreground mt-1">
                 What kind of update would you like to share?
               </p>
             </div>
@@ -88,7 +88,7 @@ export function LogTypeSelector({ isOpen, onClose, onSelectType, projectId }: Lo
               className="p-2 hover:bg-surface-light rounded-lg transition-colors duration-200"
               aria-label="Close modal"
             >
-              <X className="w-5 h-5 text-text-secondary" />
+              <X className="w-5 h-5 text-muted-foreground" />
             </button>
           </div>
         </div>
@@ -109,7 +109,7 @@ export function LogTypeSelector({ isOpen, onClose, onSelectType, projectId }: Lo
                     ${logType.bgColor} ${logType.borderColor}
                     ${isSelected 
                       ? `${logType.borderColor.replace('/20', '/60')} ring-2 ring-primary/20` 
-                      : 'border-border hover:border-border-light'
+                      : 'border-border hover:border-border-hover'
                     }
                     ${logType.hoverBg}
                     ${logType.comingSoon ? 'opacity-60 cursor-not-allowed' : ''}
@@ -139,7 +139,7 @@ export function LogTypeSelector({ isOpen, onClose, onSelectType, projectId }: Lo
                       <h3 className="font-semibold text-foreground mb-1">
                         {logType.title}
                       </h3>
-                      <p className="text-xs text-text-secondary leading-relaxed">
+                      <p className="text-xs text-muted-foreground leading-relaxed">
                         {logType.description}
                       </p>
                     </div>
@@ -158,7 +158,7 @@ export function LogTypeSelector({ isOpen, onClose, onSelectType, projectId }: Lo
 
           {/* Quick tip */}
           <div className="mt-6 p-4 bg-primary/5 border border-primary/20 rounded-lg">
-            <p className="text-sm text-text-secondary">
+            <p className="text-sm text-muted-foreground">
               <span className="font-medium text-primary">💡 Pro tip:</span> You can always switch between log types. 
               Start with what feels natural and experiment as you go!
             </p>

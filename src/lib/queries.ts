@@ -1,6 +1,7 @@
 // UPDATED QUERIES - Matching the new database schema
 
 import { supabase } from '@/lib/supabaseClient'
+import { ensureUserExists } from '@/lib/userManagement'
 import { 
   Project, 
   ProjectWithStats, 
@@ -16,11 +17,93 @@ import {
   PaginatedResponse
 } from '@/types/database'
 
-// OPTIMIZED PROJECT QUERIES
+// USER QUERIES
+
+export async function fetchUserProjectsWithCollaborators(): Promise<ProjectWithStats[]> {
+  try {
+    // Ensure user exists in database first
+    const user = await ensureUserExists()
+    if (!user) {
+      console.log('No user found or created')
+      return []
+    }
+
+    console.log('Fetching projects for user:', user.id)
+
+    // ULTRA SIMPLE TEST: Try the most basic query possible
+    try {
+      console.log('Attempting basic projects query...')
+      const { data: testProjects, error: testError } = await supabase
+        .from('projects')
+        .select('id, title, created_by')
+        .limit(1)
+
+      console.log('Basic query result:', { testProjects, testError })
+
+      if (testError) {
+        console.error('Even basic query failed:', testError)
+        
+        // If still recursion error, return empty for now
+        if (testError.code === '42P17') {
+          console.log('RLS recursion still happening, returning empty array')
+          return []
+        }
+      }
+
+      // Now try user-specific query
+      const { data: ownedProjects, error: ownedError } = await supabase
+        .from('projects')
+        .select('*')
+        .eq('created_by', user.id)
+        .eq('status', 'active')
+        .order('updated_at', { ascending: false })
+
+      if (ownedError) {
+        console.error('Error fetching owned projects:', ownedError)
+        
+        // If RLS error, return empty for now
+        if (ownedError.code === '42P17') {
+          console.log('RLS recursion detected, returning empty array')
+          return []
+        }
+        return []
+      }
+
+      console.log('Found owned projects:', ownedProjects?.length || 0)
+
+      // Skip collaboration projects for now to avoid RLS recursion
+      console.log('Skipping collaboration projects due to RLS issues')
+
+      // For now, just return owned projects
+      const allProjects: Project[] = ownedProjects || []
+
+      console.log('Total projects:', allProjects.length)
+
+      // Add basic stats without calling other functions that might trigger RLS
+      const projectsWithStats = allProjects.map(project => ({
+        ...project,
+        collaborator_count: 1, // At least the owner
+        log_count: 0, // Skip for now to avoid RLS issues
+      })) as ProjectWithStats[]
+
+      return projectsWithStats
+
+    } catch (queryError: any) {
+      console.error('Query execution error:', queryError)
+      return []
+    }
+
+  } catch (error) {
+    console.error('Error in fetchUserProjectsWithCollaborators:', error)
+    return []
+  }
+}
+
+// PROJECT QUERIES
 
 export async function fetchProjectById(id: string): Promise<ProjectWithStats | null> {
   try {
-    // First get the project
+    // Get the project
     const { data: project, error: projectError } = await supabase
       .from('projects')
       .select('*')
@@ -38,613 +121,314 @@ export async function fetchProjectById(id: string): Promise<ProjectWithStats | n
       .from('project_collaborators')
       .select(`
         *,
-        users!inner(
+        users (
           id,
           name,
           email,
-          avatar_url
+          avatar_url,
+          handle
         )
       `)
       .eq('project_id', project.id)
-      .eq('status', 'accepted')
+      .eq('status', 'active')
       .order('created_at', { ascending: false })
-      .limit(5)
 
-    // Get recent logs with user details
-    const { data: logs } = await supabase
+    // Get recent logs
+    const { data: recentLogs } = await supabase
       .from('project_logs')
       .select(`
         *,
-        users(
+        users (
           id,
           name,
-          avatar_url
+          avatar_url,
+          handle
         )
       `)
       .eq('project_id', project.id)
       .order('created_at', { ascending: false })
-      .limit(3)
+      .limit(5)
 
-    // Get total log count
-    const { count: logCount } = await supabase
-      .from('project_logs')
-      .select('*', { count: 'exact', head: true })
-      .eq('project_id', project.id)
+    // Get project stats
+    const [collaboratorCount, logCount] = await Promise.all([
+      getProjectCollaboratorCount(project.id),
+      getProjectLogCount(project.id)
+    ])
 
-    const formattedProject: ProjectWithStats = {
+    return {
       ...project,
       project_collaborators: collaborators || [],
-      project_logs: logs || [],
-      log_count: logCount || 0,
-      collaborator_count: collaborators?.length || 0
-    }
-
-    return formattedProject
+      recent_logs: recentLogs || [],
+      collaborator_count: collaboratorCount,
+      log_count: logCount,
+    } as ProjectWithStats
   } catch (error) {
     console.error('Error in fetchProjectById:', error)
     return null
   }
 }
 
-export async function fetchProjectBySlug(slug: string): Promise<ProjectWithStats | null> {
+export async function createProject(projectData: CreateProjectData): Promise<Project | null> {
   try {
-    // First get the project
-    const { data: project, error: projectError } = await supabase
-      .from('projects')
-      .select('*')
-      .eq('slug', slug)
-      .eq('status', 'active')
-      .single()
-
-    if (projectError || !project) {
-      console.error('Error fetching project:', projectError)
-      return null
-    }
-
-    // Get collaborators with user details
-    const { data: collaborators } = await supabase
-      .from('project_collaborators')
-      .select(`
-        *,
-        users!inner(
-          id,
-          name,
-          email,
-          avatar_url
-        )
-      `)
-      .eq('project_id', project.id)
-      .eq('status', 'accepted')
-      .order('created_at', { ascending: false })
-      .limit(5)
-
-    // Get recent logs with user details
-    const { data: logs } = await supabase
-      .from('project_logs')
-      .select(`
-        *,
-        users(
-          id,
-          name,
-          avatar_url
-        )
-      `)
-      .eq('project_id', project.id)
-      .order('created_at', { ascending: false })
-      .limit(3)
-
-    // Get total log count
-    const { count: logCount } = await supabase
-      .from('project_logs')
-      .select('*', { count: 'exact', head: true })
-      .eq('project_id', project.id)
-
-    const formattedProject: ProjectWithStats = {
-      ...project,
-      collaborator_count: collaborators?.length || 0,
-      log_count: logCount || 0,
-      last_activity: logs?.[0]?.created_at,
-      collaborators: collaborators || [],
-      recent_logs: logs || []
-    }
-
-    return formattedProject
-  } catch (error) {
-    console.error('Unexpected error fetching project:', error)
-    return null
-  }
-}
-
-export async function fetchUserProjectsWithCollaborators(): Promise<Project[]> {
-  try {
-    const { data: { user } } = await supabase.auth.getUser()
-    
+    // Ensure user exists in database first
+    const user = await ensureUserExists()
     if (!user) {
-      return []
+      throw new Error('User not authenticated or could not be created in database')
     }
 
-    // First get the user's projects
-    const { data: projects, error: projectsError } = await supabase
-      .from('projects')
-      .select('*')
-      .eq('created_by', user.id)
-      .eq('status', 'active')
-      .order('updated_at', { ascending: false })
+    console.log('Creating project for user:', user.id)
 
-    if (projectsError) {
-      console.error('Error fetching projects:', projectsError)
-      console.error('Error details:', projectsError.details)
-      console.error('Error hint:', projectsError.hint)
-      console.error('Error message:', projectsError.message)
-      return []
-    }
-
-    if (!projects || projects.length === 0) {
-      return []
-    }
-
-    // Get collaborators for all projects (simplified query)
-    const projectIds = projects.map(p => p.id)
-    const { data: collaborators, error: collabError } = await supabase
-      .from('project_collaborators')
-      .select('*')
-      .in('project_id', projectIds)
-      .eq('status', 'accepted')
-
-    if (collabError) {
-      console.error('Error fetching collaborators:', collabError)
-      console.error('Error details:', collabError.details)
-      console.error('Error hint:', collabError.hint)
-      console.error('Error message:', collabError.message)
-      // Return projects without collaborator data rather than failing completely
-      return projects.map(project => ({
-        ...project,
-        project_collaborators: []
-      }))
-    }
-
-    // Get user details for collaborators
-    let collaboratorsWithUsers = []
-    if (collaborators && collaborators.length > 0) {
-      const userIds = collaborators.map(c => c.user_id)
-      const { data: users, error: usersError } = await supabase
-        .from('users')
-        .select('id, name, email, avatar_url')
-        .in('id', userIds)
-
-      if (usersError) {
-        console.error('Error fetching user details:', usersError)
-        // Still include collaborators without user details
-        collaboratorsWithUsers = collaborators.map(collab => ({
-          ...collab,
-          users: null
-        }))
-      } else {
-        // Combine collaborators with user data
-        collaboratorsWithUsers = collaborators.map(collab => ({
-          ...collab,
-          users: users?.find(user => user.id === collab.user_id) || null
-        }))
-      }
-    }
-
-    // Combine projects with their collaborators
-    const projectsWithCollaborators = projects.map(project => ({
-      ...project,
-      project_collaborators: collaboratorsWithUsers?.filter(collab => collab.project_id === project.id) || []
-    }))
-
-    return projectsWithCollaborators
-  } catch (error) {
-    console.error('Error in fetchUserProjectsWithCollaborators:', error)
-    return []
-  }
-}
-
-export async function fetchUserProjects(
-  filters: ProjectFilters = {},
-  sort: ProjectSortOptions = { field: 'updated_at', direction: 'desc' },
-  pagination: PaginationOptions = { page: 1, limit: 20 }
-): Promise<PaginatedResponse<Project>> {
-  try {
-    const { data: { user } } = await supabase.auth.getUser()
-    
-    if (!user) {
-      return {
-        data: [],
-        pagination: {
-          page: pagination.page,
-          limit: pagination.limit,
-          total: 0,
-          total_pages: 0,
-          has_next: false,
-          has_prev: false
-        }
-      }
-    }
-
-    let query = supabase
-      .from('projects')
-      .select('*', { count: 'exact' })
-
-    // Filter by projects created by the user (simplified for now)
-    query = query.eq('created_by', user.id)
-
-    // Apply filters
-    if (filters.visibility) {
-      query = query.eq('visibility', filters.visibility)
-    }
-    
-    if (filters.status) {
-      query = query.eq('status', filters.status)
-    } else {
-      query = query.eq('status', 'active')
-    }
-
-    if (filters.search) {
-      query = query.or(`title.ilike.%${filters.search}%,description.ilike.%${filters.search}%`)
-    }
-
-    // Apply sorting
-    query = query.order(sort.field, { ascending: sort.direction === 'asc' })
-
-    // Apply pagination
-    const from = (pagination.page - 1) * pagination.limit
-    const to = from + pagination.limit - 1
-    query = query.range(from, to)
-
-    const { data: projects, error, count } = await query
-
-    if (error) {
-      console.error('Error fetching user projects:', error)
-      return {
-        data: [],
-        pagination: {
-          page: pagination.page,
-          limit: pagination.limit,
-          total: 0,
-          total_pages: 0,
-          has_next: false,
-          has_prev: false
-        }
-      }
-    }
-
-    const total = count || 0
-    const total_pages = Math.ceil(total / pagination.limit)
-
-    return {
-      data: projects || [],
-      pagination: {
-        page: pagination.page,
-        limit: pagination.limit,
-        total,
-        total_pages,
-        has_next: pagination.page < total_pages,
-        has_prev: pagination.page > 1
-      }
-    }
-  } catch (error) {
-    console.error('Unexpected error fetching user projects:', error)
-    return {
-      data: [],
-      pagination: {
-        page: pagination.page,
-        limit: pagination.limit,
-        total: 0,
-        total_pages: 0,
-        has_next: false,
-        has_prev: false
-      }
-    }
-  }
-}
-
-// PROJECT COLLABORATION QUERIES
-
-export async function fetchProjectCollaborators(projectId: string): Promise<ProjectCollaborator[]> {
-  try {
-    const { data: collaborators, error } = await supabase
-      .from('project_collaborators')
-      .select(`
-        *,
-        users!inner(
-          id,
-          name,
-          email,
-          avatar_url
-        )
-      `)
-      .eq('project_id', projectId)
-      .in('status', ['pending', 'accepted'])
-      .order('role').order('created_at', { ascending: false })
-
-    if (error) {
-      console.error('Error fetching collaborators:', error)
-      return []
-    }
-
-    return collaborators || []
-  } catch (error) {
-    console.error('Unexpected error fetching collaborators:', error)
-    return []
-  }
-}
-
-export async function inviteCollaborator(data: InviteCollaboratorData): Promise<ProjectCollaborator | null> {
-  try {
-    const { data: { user } } = await supabase.auth.getUser()
-    
-    if (!user) {
-      throw new Error('User not authenticated')
-    }
-
-    const { data: collaborator, error } = await supabase
-      .from('project_collaborators')
-      .insert({
-        ...data,
-        invited_by: user.id,
-        status: 'pending'
-      })
-      .select(`
-        *,
-        users!inner(
-          id,
-          name,
-          email,
-          avatar_url
-        )
-      `)
-      .single()
-
-    if (error) {
-      console.error('Error inviting collaborator:', error)
-      return null
-    }
-
-    return collaborator
-  } catch (error) {
-    console.error('Unexpected error inviting collaborator:', error)
-    return null
-  }
-}
-
-export async function updateCollaborator(
-  collaboratorId: string,
-  data: UpdateCollaboratorData
-): Promise<ProjectCollaborator | null> {
-  try {
-    const { data: collaborator, error } = await supabase
-      .from('project_collaborators')
-      .update({
-        ...data,
-        updated_at: new Date().toISOString(),
-        ...(data.status === 'accepted' ? { joined_at: new Date().toISOString() } : {})
-      })
-      .eq('id', collaboratorId)
-      .select(`
-        *,
-        users!inner(
-          id,
-          name,
-          email,
-          avatar_url
-        )
-      `)
-      .single()
-
-    if (error) {
-      console.error('Error updating collaborator:', error)
-      return null
-    }
-
-    return collaborator
-  } catch (error) {
-    console.error('Unexpected error updating collaborator:', error)
-    return null
-  }
-}
-
-// PROJECT MANAGEMENT QUERIES
-
-export async function createProject(data: CreateProjectData): Promise<Project | null> {
-  try {
-    const { data: { user } } = await supabase.auth.getUser()
-    
-    console.log('createProject - Current user:', user?.id)
-    console.log('createProject - Project data:', data)
-    
-    if (!user) {
-      throw new Error('User not authenticated')
-    }
-
-    // Ensure user exists in users table first
-    const { data: existingUser, error: userError } = await supabase
-      .from('users')
-      .select('id')
-      .eq('id', user.id)
-      .single()
-    
-    if (userError && userError.code === 'PGRST116') {
-      // User doesn't exist, create them
-      console.log('createProject - Creating user record')
-      const { error: insertUserError } = await supabase
-        .from('users')
-        .insert({
-          id: user.id,
-          name: user.user_metadata?.full_name || user.email?.split('@')[0] || '',
-          email: user.email || '',
-          avatar_url: user.user_metadata?.avatar_url
-        })
-      
-      if (insertUserError) {
-        console.error('Error creating user:', insertUserError)
-        throw insertUserError
-      }
-    } else if (userError) {
-      console.error('Error checking user:', userError)
-      throw userError
-    }
-
-    // Generate unique slug from title
-    let slug = data.title
-      .toLowerCase()
-      .replace(/[^a-z0-9\s-]/g, '')
-      .replace(/\s+/g, '-')
-      .trim()
-
-    // Check if slug already exists and make it unique
-    let uniqueSlug = slug
-    let counter = 1
-    while (true) {
-      const { data: existingProject } = await supabase
-        .from('projects')
-        .select('id')
-        .eq('slug', uniqueSlug)
-        .single()
-      
-      if (!existingProject) break
-      
-      uniqueSlug = `${slug}-${counter}`
-      counter++
-    }
-
-    const projectData = {
-      title: data.title,
-      description: data.description,
-      visibility: data.visibility,
-      tags: data.tags || [],
-      project_settings: data.project_settings || {},
-      created_by: user.id,
-      slug: uniqueSlug,
-      status: 'active'
-    }
-    
-    console.log('createProject - Inserting project:', projectData)
+    // Generate slug from title
+    const slug = await generateProjectSlug(projectData.title)
 
     const { data: project, error } = await supabase
       .from('projects')
-      .insert(projectData)
+      .insert({
+        ...projectData,
+        slug,
+        created_by: user.id,
+        project_settings: projectData.project_settings || {}
+      })
       .select()
       .single()
 
     if (error) {
       console.error('Error creating project:', error)
-      console.error('Error details:', error.details)
-      console.error('Error hint:', error.hint)
-      console.error('Error message:', error.message)
-      return null
+      throw error
     }
 
-    console.log('createProject - Project created:', project)
-
-    // Add creator as admin collaborator
-    const collaboratorData = {
-      project_id: project.id,
-      user_id: user.id,
-      role: 'admin',
-      status: 'accepted',
-      joined_at: new Date().toISOString()
-    }
+    console.log('Project created successfully:', project.id)
     
-    console.log('createProject - Adding collaborator:', collaboratorData)
-    
-    const { error: collaboratorError } = await supabase
-      .from('project_collaborators')
-      .insert(collaboratorData)
+    // The trigger should automatically create the owner collaboration record
+    // Let's verify it worked
+    setTimeout(async () => {
+      const { data: collaborators } = await supabase
+        .from('project_collaborators')
+        .select('*')
+        .eq('project_id', project.id)
       
-    if (collaboratorError) {
-      console.error('Error adding collaborator:', collaboratorError)
-      // Don't fail the project creation if collaborator addition fails
-    }
+      console.log('Auto-created collaborators:', collaborators)
+    }, 1000)
 
-    console.log('createProject - Complete, returning project:', project)
     return project
   } catch (error) {
-    console.error('Unexpected error creating project:', error)
+    console.error('Error in createProject:', error)
     return null
   }
 }
 
-export async function createLog(data: CreateLogData): Promise<ProjectLog | null> {
+// PROJECT LOG QUERIES
+
+export async function fetchProjectLogs(projectId: string, limit: number = 20): Promise<ProjectLog[]> {
+  try {
+    const { data: logs, error } = await supabase
+      .from('project_logs')
+      .select(`
+        *,
+        users (
+          id,
+          name,
+          avatar_url,
+          handle
+        )
+      `)
+      .eq('project_id', projectId)
+      .order('timeline_date', { ascending: false })
+      .order('created_at', { ascending: false })
+      .limit(limit)
+
+    if (error) {
+      console.error('Error fetching project logs:', error)
+      return []
+    }
+
+    return logs as ProjectLog[]
+  } catch (error) {
+    console.error('Error in fetchProjectLogs:', error)
+    return []
+  }
+}
+
+export async function createProjectLog(logData: CreateLogData): Promise<ProjectLog | null> {
   try {
     const { data: { user } } = await supabase.auth.getUser()
-    
     if (!user) {
       throw new Error('User not authenticated')
     }
 
+    // Explicitly map only the fields we know exist in the table
+    const insertData = {
+      project_id: logData.project_id,
+      author_id: user.id,
+      type: logData.type,
+      title: logData.title || null,
+      content: logData.content || null,
+      summary: logData.summary || null,
+      source_link: logData.source_link || null,
+      featured_image: logData.featured_image || null,
+      images: logData.images || null,
+      tags: logData.tags || [],
+      timeline_date: logData.timeline_date || new Date().toISOString(),
+      is_pinned: logData.is_pinned || false,
+      metadata: logData.metadata || {}
+    }
+
+    console.log('Inserting log data:', insertData)
+    console.log('Insert data keys:', Object.keys(insertData))
+
     const { data: log, error } = await supabase
       .from('project_logs')
-      .insert({
-        ...data,
-        user_id: user.id
-      })
-      .select(`
-        *,
-        users(
-          id,
-          name,
-          avatar_url
-        )
-      `)
+      .insert(insertData)
+      .select()
       .single()
 
     if (error) {
-      console.error('Error creating log:', error)
-      return null
+      console.error('Supabase error details:', {
+        message: error.message,
+        details: error.details,
+        hint: error.hint,
+        code: error.code
+      })
+      throw error
     }
 
+    console.log('Log created successfully:', log)
     return log
   } catch (error) {
-    console.error('Unexpected error creating log:', error)
+    console.error('Error in createProjectLog:', error)
     return null
   }
 }
 
-// UTILITY FUNCTIONS
+// COLLABORATION QUERIES
 
-export async function checkProjectAccess(projectId: string): Promise<boolean> {
+export async function inviteCollaborator(inviteData: InviteCollaboratorData): Promise<ProjectCollaborator | null> {
   try {
     const { data: { user } } = await supabase.auth.getUser()
-    
     if (!user) {
-      return false
+      throw new Error('User not authenticated')
     }
 
-    // Check if user is the project creator or an accepted collaborator
-    const { data: project } = await supabase
-      .from('projects')
-      .select('id, created_by, visibility')
-      .eq('id', projectId)
+    const { data: collaborator, error } = await supabase
+      .from('project_collaborators')
+      .insert({
+        ...inviteData,
+        invited_by: user.id,
+        permissions: inviteData.permissions || {
+          read: true,
+          write: inviteData.role === 'editor' || inviteData.role === 'admin' || inviteData.role === 'owner',
+          admin: inviteData.role === 'admin' || inviteData.role === 'owner'
+        }
+      })
+      .select()
       .single()
 
-    if (!project) {
-      return false
+    if (error) {
+      console.error('Error inviting collaborator:', error)
+      throw error
     }
 
-    // Public projects are accessible to everyone
-    if (project.visibility === 'public') {
-      return true
-    }
+    return collaborator
+  } catch (error) {
+    console.error('Error in inviteCollaborator:', error)
+    return null
+  }
+}
 
-    // Check if user created the project
-    if (project.created_by === user.id) {
-      return true
-    }
+// HELPER FUNCTIONS
 
-    // Check if user is an accepted collaborator
-    const { data: collaboration } = await supabase
-      .from('project_collaborators')
-      .select('id')
+async function getProjectCollaboratorCount(projectId: string): Promise<number> {
+  const { count } = await supabase
+    .from('project_collaborators')
+    .select('*', { count: 'exact', head: true })
+    .eq('project_id', projectId)
+    .eq('status', 'active')
+
+  return count || 0
+}
+
+async function getProjectLogCount(projectId: string): Promise<number> {
+  const { count } = await supabase
+    .from('project_logs')
+    .select('*', { count: 'exact', head: true })
+    .eq('project_id', projectId)
+
+  return count || 0
+}
+
+async function generateProjectSlug(title: string): Promise<string> {
+  // Use the database function for generating unique slugs
+  const { data, error } = await supabase
+    .rpc('generate_project_slug', { title })
+
+  if (error) {
+    console.error('Error generating slug:', error)
+    // Fallback to simple slug generation
+    return title.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '')
+  }
+
+  return data
+}
+
+// WATCH/STAR FUNCTIONS
+
+export async function watchProject(projectId: string): Promise<boolean> {
+  try {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return false
+
+    const { error } = await supabase
+      .from('project_watchers')
+      .insert({
+        project_id: projectId,
+        user_id: user.id,
+        type: 'watch'
+      })
+
+    return !error
+  } catch (error) {
+    console.error('Error watching project:', error)
+    return false
+  }
+}
+
+export async function starProject(projectId: string): Promise<boolean> {
+  try {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return false
+
+    const { error } = await supabase
+      .from('project_watchers')
+      .insert({
+        project_id: projectId,
+        user_id: user.id,
+        type: 'star'
+      })
+
+    return !error
+  } catch (error) {
+    console.error('Error starring project:', error)
+    return false
+  }
+}
+
+export async function getProjectWatchStatus(projectId: string): Promise<{ isWatching: boolean; isStarred: boolean }> {
+  try {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return { isWatching: false, isStarred: false }
+
+    const { data: watchers } = await supabase
+      .from('project_watchers')
+      .select('type')
       .eq('project_id', projectId)
       .eq('user_id', user.id)
-      .eq('status', 'accepted')
-      .single()
 
-    return !!collaboration
+    const isWatching = watchers?.some(w => w.type === 'watch') || false
+    const isStarred = watchers?.some(w => w.type === 'star') || false
+
+    return { isWatching, isStarred }
   } catch (error) {
-    console.error('Error checking project access:', error)
-    return false
+    console.error('Error getting watch status:', error)
+    return { isWatching: false, isStarred: false }
   }
 }

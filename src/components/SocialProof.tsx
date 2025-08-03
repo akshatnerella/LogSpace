@@ -39,7 +39,7 @@ export function SocialProof() {
               <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-primary mb-1 sm:mb-2">
                 {stat.value}
               </div>
-              <div className="text-text-secondary text-xs sm:text-sm lg:text-base">
+              <div className="text-muted-foreground text-xs sm:text-sm lg:text-base">
                 {stat.label}
               </div>
             </div>
@@ -55,7 +55,7 @@ export function SocialProof() {
             {[...Array(5)].map((_, i) => (
               <Star key={i} className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-400 fill-current" />
             ))}
-            <span className="ml-2 text-text-secondary text-sm sm:text-base">4.9/5 from 200+ reviews</span>
+            <span className="ml-2 text-muted-foreground text-sm sm:text-base">4.9/5 from 200+ reviews</span>
           </div>
         </div>
 
@@ -82,7 +82,7 @@ export function SocialProof() {
                   <div className="font-semibold text-foreground text-sm sm:text-base">
                     {testimonial.author}
                   </div>
-                  <div className="text-text-secondary text-xs sm:text-sm">
+                  <div className="text-muted-foreground text-xs sm:text-sm">
                     {testimonial.role}
                   </div>
                 </div>

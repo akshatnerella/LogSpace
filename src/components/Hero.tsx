@@ -19,7 +19,7 @@ export function Hero() {
                 </span>{' '}
                 Show the Climb.
               </h1>
-              <p className="text-lg sm:text-xl lg:text-2xl text-text-secondary leading-relaxed max-w-3xl mx-auto lg:mx-0">
+              <p className="text-lg sm:text-xl lg:text-2xl text-muted-foreground leading-relaxed max-w-3xl mx-auto lg:mx-0">
                 Log your work in public, share ideas, track your journey, and let others follow your build. Turn your progress into your competitive advantage.
               </p>
             </div>
@@ -75,7 +75,7 @@ export function Hero() {
                 
                 {/* Timeline entries */}
                 {[1, 2, 3].map((i) => (
-                  <div key={i} className="flex space-x-3 sm:space-x-4 p-3 sm:p-4 bg-surface-hover rounded-lg sm:rounded-xl border border-border-light">
+                  <div key={i} className="flex space-x-3 sm:space-x-4 p-3 sm:p-4 bg-surface-hover rounded-lg sm:rounded-xl border border-border-hover">
                     <div className="h-1.5 w-1.5 sm:h-2 sm:w-2 bg-primary rounded-full mt-1.5 sm:mt-2 flex-shrink-0" />
                     <div className="flex-1 space-y-1.5 sm:space-y-2">
                       <div className="h-2.5 sm:h-3 w-full bg-foreground/30 rounded" />

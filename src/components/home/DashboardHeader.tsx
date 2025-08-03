@@ -7,7 +7,7 @@ export function DashboardHeader() {
     <header className="border-b border-border bg-background/80 backdrop-blur-xl sticky top-0 z-40">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 h-14 sm:h-16 flex items-center justify-between">
         {/* Logo */}
-        <Link href="/dashboard" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
+        <Link href="/home" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
           <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg overflow-hidden">
             <img src="/logo.png" alt="LogSpace" className="w-full h-full object-contain" />
           </div>

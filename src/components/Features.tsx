@@ -214,7 +214,7 @@ export function Features() {
               Build Better
             </span>
           </h2>
-          <p className="text-base sm:text-lg lg:text-xl text-text-secondary max-w-4xl mx-auto leading-relaxed">
+          <p className="text-base sm:text-lg lg:text-xl text-muted-foreground max-w-4xl mx-auto leading-relaxed">
             LogSpace gives you everything you need to stay accountable, attract attention, and grow your project: one public update at a time.
           </p>
         </motion.div>
@@ -258,7 +258,7 @@ export function Features() {
                     <h3 className="text-lg sm:text-xl font-bold text-foreground group-hover:text-primary transition-colors duration-300">
                       {feature.title}
                     </h3>
-                    <p className="text-sm sm:text-base text-text-secondary leading-relaxed whitespace-pre-line">
+                    <p className="text-sm sm:text-base text-muted-foreground leading-relaxed whitespace-pre-line">
                       {feature.description}
                     </p>
                   </div>

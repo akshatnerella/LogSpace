@@ -7,7 +7,8 @@ import { supabase } from '@/lib/supabaseClient'
 import { HomeLayout } from '@/components/home/HomeLayout'
 import { SignInModal } from '@/components/auth/SignInModal'
 import { usePendingProject } from '@/hooks/usePendingProject'
-import { fetchUserProjects, fetchUserProjectsWithCollaborators } from '@/lib/queries'
+import { fetchUserProjectsWithCollaborators } from '@/lib/queries'
+import { debugDatabaseConnection, ensureUserExists } from '@/lib/userManagement'
 import { Project } from '@/types/database'
 
 export function HomeClient() {
@@ -24,21 +25,21 @@ export function HomeClient() {
     async function loadProjects() {
       if (!authLoading && user?.id) {
         try {
-          console.log('Fetching projects for user:', user.id)
+          console.log('=== STARTING PROJECT FETCH FOR USER ===', user.id)
           
-          // Simple direct query to debug
-          const { data: debugProjects, error: debugError } = await supabase
-            .from('projects')
-            .select('*')
-            .eq('created_by', user.id)
+          // Debug database connection first
+          await debugDatabaseConnection()
           
-          console.log('Debug direct query result:', { debugProjects, debugError })
+          // Ensure user exists in database
+          const dbUser = await ensureUserExists()
+          console.log('Database user:', dbUser?.id)
           
+          // Now fetch projects
           const userProjects = await fetchUserProjectsWithCollaborators()
-          console.log('Fetched projects with collaborators:', userProjects)
+          console.log('Final projects result:', userProjects)
           setProjects(userProjects)
         } catch (error) {
-          console.error('Error fetching projects:', error)
+          console.error('Error in loadProjects:', error)
         } finally {
           setLoading(false)
         }
@@ -58,6 +59,11 @@ export function HomeClient() {
         // Re-fetch projects
         const refreshProjects = async () => {
           try {
+            console.log('=== REFRESHING PROJECTS FOR USER ===', user.id)
+            await debugDatabaseConnection()
+            const dbUser = await ensureUserExists()
+            console.log('Database user during refresh:', dbUser?.id)
+            
             const userProjects = await fetchUserProjectsWithCollaborators()
             console.log('Refreshed projects:', userProjects)
             setProjects(userProjects)
@@ -79,7 +85,7 @@ export function HomeClient() {
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
-          <p className="text-text-secondary">Loading dashboard...</p>
+          <p className="text-muted-foreground">Loading dashboard...</p>
         </div>
       </div>
     )
@@ -92,7 +98,7 @@ export function HomeClient() {
         <div className="min-h-screen bg-background flex items-center justify-center">
           <div className="text-center">
             <h2 className="text-xl font-semibold text-foreground mb-2">Access Denied</h2>
-            <p className="text-text-secondary mb-4">Please sign in to view your home.</p>
+            <p className="text-muted-foreground mb-4">Please sign in to view your home.</p>
             <button 
               onClick={() => setShowSignInModal(true)}
               className="inline-flex items-center px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"

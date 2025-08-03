@@ -33,7 +33,7 @@ export function CreateFirstProject() {
           <h2 className="text-xl sm:text-2xl font-bold text-foreground mb-2">
             Ready to start building in public?
           </h2>
-          <p className="text-sm sm:text-base text-text-secondary max-w-md mx-auto">
+          <p className="text-sm sm:text-base text-muted-foreground max-w-md mx-auto">
             You haven&apos;t created any projects yet. Start your first build-in-public project and connect with the builder community.
           </p>
         </div>
@@ -51,7 +51,7 @@ export function CreateFirstProject() {
                   <h3 className="text-sm sm:text-base font-semibold text-foreground mb-1">
                     {step.title}
                   </h3>
-                  <p className="text-xs sm:text-sm text-text-secondary">
+                  <p className="text-xs sm:text-sm text-muted-foreground">
                     {step.description}
                   </p>
                 </div>

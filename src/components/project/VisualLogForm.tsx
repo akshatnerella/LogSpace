@@ -108,13 +108,13 @@ export function VisualLogForm({ projectId, onBack, onSubmit }: VisualLogFormProp
                 className="p-2 hover:bg-surface-light rounded-lg transition-colors duration-200"
                 aria-label="Go back"
               >
-                <ArrowLeft className="w-5 h-5 text-text-secondary" />
+                <ArrowLeft className="w-5 h-5 text-muted-foreground" />
               </button>
               <div>
                 <h1 className="text-lg sm:text-xl font-bold text-foreground">
                   New Visual Log
                 </h1>
-                <p className="text-sm text-text-secondary">
+                <p className="text-sm text-muted-foreground">
                   Share images, videos, or screenshots
                 </p>
               </div>
@@ -136,7 +136,7 @@ export function VisualLogForm({ projectId, onBack, onSubmit }: VisualLogFormProp
                 relative border-2 border-dashed rounded-xl p-8 text-center transition-all duration-300
                 ${isDragOver 
                   ? 'border-primary bg-primary/5' 
-                  : 'border-border hover:border-border-light hover:bg-surface/50'
+                  : 'border-border hover:border-border-hover hover:bg-surface/50'
                 }
               `}
             >
@@ -159,10 +159,10 @@ export function VisualLogForm({ projectId, onBack, onSubmit }: VisualLogFormProp
                   <h3 className="text-lg font-semibold text-foreground mb-2">
                     Drop your files here, or click to browse
                   </h3>
-                  <p className="text-sm text-text-secondary mb-4">
+                  <p className="text-sm text-muted-foreground mb-4">
                     Support for JPG, PNG, GIF, WebP, MP4, MOV, AVI, WebM
                   </p>
-                  <p className="text-xs text-text-secondary">
+                  <p className="text-xs text-muted-foreground">
                     Max 5 files • Up to 10MB each
                   </p>
                 </div>
@@ -233,7 +233,7 @@ export function VisualLogForm({ projectId, onBack, onSubmit }: VisualLogFormProp
                             {uploadedFile.file.name}
                           </span>
                         </div>
-                        <p className="text-xs text-text-secondary">
+                        <p className="text-xs text-muted-foreground">
                           {formatFileSize(uploadedFile.file.size)}
                         </p>
                       </div>
@@ -255,14 +255,14 @@ export function VisualLogForm({ projectId, onBack, onSubmit }: VisualLogFormProp
               value={caption}
               onChange={(e) => setCaption(e.target.value)}
               rows={4}
-              className="w-full bg-surface border border-border rounded-lg px-4 py-3 text-foreground placeholder-text-secondary focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors duration-200 resize-none"
+              className="w-full bg-surface border border-border rounded-lg px-4 py-3 text-foreground placeholder-muted-foreground focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors duration-200 resize-none"
               maxLength={500}
             />
             <div className="flex justify-between items-center">
-              <p className="text-xs text-text-secondary">
+              <p className="text-xs text-muted-foreground">
                 Help viewers understand what they&apos;re seeing
               </p>
-              <span className="text-xs text-text-secondary">
+              <span className="text-xs text-muted-foreground">
                 {caption.length}/500
               </span>
             </div>
@@ -271,7 +271,7 @@ export function VisualLogForm({ projectId, onBack, onSubmit }: VisualLogFormProp
           {/* Footer Actions */}
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-4 border-t border-border">
             <div className="flex-1">
-              <p className="text-xs text-text-secondary">
+              <p className="text-xs text-muted-foreground">
                 Your visual log will be visible to anyone following your project. 
                 <span className="font-medium text-foreground"> Make sure you have the right to share these files!</span>
               </p>

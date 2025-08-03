@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { LogTypeSelector } from '@/components/project/LogTypeSelector'
 import { TextLogForm } from '@/components/project/TextLogForm'
 import { VisualLogForm } from '@/components/project/VisualLogForm'
+import { createProjectLog } from '@/lib/queries'
 
 interface CreateLogPageProps {
   params: Promise<{
@@ -13,7 +14,7 @@ interface CreateLogPageProps {
 }
 
 export default function CreateLogPage({ params }: CreateLogPageProps) {
-  const [selectedType, setSelectedType] = useState<'text' | 'visual' | 'code' | null>(null)
+  const [selectedType, setSelectedType] = useState<'text' | 'image' | 'url' | null>(null)
   const [showSelector, setShowSelector] = useState(true)
   const [projectId, setProjectId] = useState<string>('')
   const router = useRouter()
@@ -27,7 +28,7 @@ export default function CreateLogPage({ params }: CreateLogPageProps) {
     getParams()
   }, [params])
 
-  const handleSelectType = (type: 'text' | 'visual' | 'code') => {
+  const handleSelectType = (type: 'text' | 'image' | 'url') => {
     setSelectedType(type)
     setShowSelector(false)
   }
@@ -43,14 +44,22 @@ export default function CreateLogPage({ params }: CreateLogPageProps) {
 
   const handleTextLogSubmit = async (data: { title: string; content: string }) => {
     try {
-      // TODO: Send to backend API
-      console.log('Text log data:', data)
+      console.log('Creating text log:', data)
       
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      
-      // Show success toast (you can implement a toast system)
-      alert('Text log published successfully!')
+      const logData = {
+        project_id: projectId,
+        type: 'text' as const,
+        title: data.title,
+        content: data.content,
+        timeline_date: new Date().toISOString()
+      }
+
+      const result = await createProjectLog(logData)
+      if (!result) {
+        throw new Error('Failed to create log')
+      }
+
+      console.log('Text log created successfully:', result.id)
       
       // Redirect back to project
       router.push(`/project/${projectId}`)
@@ -113,7 +122,7 @@ export default function CreateLogPage({ params }: CreateLogPageProps) {
     )
   }
 
-  if (selectedType === 'visual') {
+  if (selectedType === 'image') {
     return (
       <VisualLogForm
         projectId={projectId}
@@ -123,7 +132,24 @@ export default function CreateLogPage({ params }: CreateLogPageProps) {
     )
   }
 
-  // For now, code type redirects back to selector since it's "coming soon"
+  if (selectedType === 'url') {
+    // TODO: Create URL form component
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-xl font-semibold mb-2">URL Log Coming Soon</h2>
+          <button 
+            onClick={handleBack}
+            className="text-primary hover:underline"
+          >
+            Go back
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  // Default to selector
   return (
     <LogTypeSelector
       isOpen={true}

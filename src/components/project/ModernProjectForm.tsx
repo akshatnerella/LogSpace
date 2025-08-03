@@ -170,7 +170,7 @@ export function ModernProjectForm({ onAuthRequired, isAuthenticated }: ModernPro
                 <label htmlFor="name" className="block text-base font-semibold text-foreground">
                   Project Name
                 </label>
-                <p className="text-xs text-text-secondary">Make it memorable!</p>
+                <p className="text-xs text-muted-foreground">Make it memorable!</p>
               </div>
             </div>
             
@@ -186,7 +186,7 @@ export function ModernProjectForm({ onAuthRequired, isAuthenticated }: ModernPro
               onFocus={() => setFocusedField('name')}
               onBlur={() => setFocusedField(null)}
               placeholder="e.g., AI Resume Bot"
-              className="w-full px-0 py-2 bg-transparent border-0 text-lg sm:text-xl font-bold text-foreground placeholder-text-secondary/60 focus:outline-none focus:ring-0"
+              className="w-full px-0 py-2 bg-transparent border-0 text-lg sm:text-xl font-bold text-foreground placeholder-muted-foreground/60 focus:outline-none focus:ring-0"
               maxLength={50}
             />
             
@@ -206,7 +206,7 @@ export function ModernProjectForm({ onAuthRequired, isAuthenticated }: ModernPro
               
               <div className="flex items-center space-x-2">
                 <span className={`text-xs font-medium ${
-                  formData.name.length > 40 ? 'text-amber-400' : 'text-text-secondary'
+                  formData.name.length > 40 ? 'text-amber-400' : 'text-muted-foreground'
                 }`}>
                   {formData.name.length}/50
                 </span>
@@ -251,7 +251,7 @@ export function ModernProjectForm({ onAuthRequired, isAuthenticated }: ModernPro
                     <label htmlFor="description" className="block text-base font-semibold text-foreground">
                       Short Description
                     </label>
-                    <p className="text-xs text-text-secondary">What&apos;s this project about?</p>
+                    <p className="text-xs text-muted-foreground">What&apos;s this project about?</p>
                   </div>
                 </div>
                 
@@ -264,15 +264,15 @@ export function ModernProjectForm({ onAuthRequired, isAuthenticated }: ModernPro
                   placeholder="Building something awesome..."
                   rows={2}
                   maxLength={200}
-                  className="w-full px-0 py-2 bg-transparent border-0 text-sm sm:text-base text-foreground placeholder-text-secondary/60 focus:outline-none focus:ring-0 resize-none"
+                  className="w-full px-0 py-2 bg-transparent border-0 text-sm sm:text-base text-foreground placeholder-muted-foreground/60 focus:outline-none focus:ring-0 resize-none"
                 />
                 
                 <div className="flex items-center justify-between mt-2">
-                  <p className="text-xs text-text-secondary">
+                  <p className="text-xs text-muted-foreground">
                     Don&apos;t worry — you can update this later.
                   </p>
                   <span className={`text-xs font-medium ${
-                    formData.description.length > 160 ? 'text-amber-400' : 'text-text-secondary'
+                    formData.description.length > 160 ? 'text-amber-400' : 'text-muted-foreground'
                   }`}>
                     {formData.description.length}/200
                   </span>
@@ -339,7 +339,7 @@ export function ModernProjectForm({ onAuthRequired, isAuthenticated }: ModernPro
                   )}
                 </Button>
                 
-                <p className="text-xs text-text-secondary text-center mt-2 sm:hidden">
+                <p className="text-xs text-muted-foreground text-center mt-2 sm:hidden">
                   {isAuthenticated ? 'Ready to create!' : 'We\'ll sign you in first'}
                 </p>
               </div>

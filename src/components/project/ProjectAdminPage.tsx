@@ -166,7 +166,7 @@ export function ProjectAdminPage({ project, onBack }: ProjectAdminPageProps) {
                 className="p-2 hover:bg-surface-light rounded-lg transition-colors duration-200"
                 aria-label="Go back"
               >
-                <X className="w-5 h-5 text-text-secondary" />
+                <X className="w-5 h-5 text-muted-foreground" />
               </button>
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
@@ -176,7 +176,7 @@ export function ProjectAdminPage({ project, onBack }: ProjectAdminPageProps) {
                   <h1 className="text-xl sm:text-2xl font-bold text-foreground">
                     ⚙️ Project Settings
                   </h1>
-                  <p className="text-sm text-text-secondary mt-1">
+                  <p className="text-sm text-muted-foreground mt-1">
                     Manage your team and project preferences
                   </p>
                 </div>
@@ -215,11 +215,11 @@ export function ProjectAdminPage({ project, onBack }: ProjectAdminPageProps) {
               <table className="w-full">
                 <thead className="bg-surface-light">
                   <tr>
-                    <th className="text-left px-6 py-3 text-sm font-medium text-text-secondary">Name</th>
-                    <th className="text-left px-6 py-3 text-sm font-medium text-text-secondary">Email</th>
-                    <th className="text-left px-6 py-3 text-sm font-medium text-text-secondary">Role</th>
-                    <th className="text-left px-6 py-3 text-sm font-medium text-text-secondary">Joined</th>
-                    <th className="text-left px-6 py-3 text-sm font-medium text-text-secondary">Actions</th>
+                    <th className="text-left px-6 py-3 text-sm font-medium text-muted-foreground">Name</th>
+                    <th className="text-left px-6 py-3 text-sm font-medium text-muted-foreground">Email</th>
+                    <th className="text-left px-6 py-3 text-sm font-medium text-muted-foreground">Role</th>
+                    <th className="text-left px-6 py-3 text-sm font-medium text-muted-foreground">Joined</th>
+                    <th className="text-left px-6 py-3 text-sm font-medium text-muted-foreground">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border">
@@ -240,7 +240,7 @@ export function ProjectAdminPage({ project, onBack }: ProjectAdminPageProps) {
                           </div>
                         </div>
                       </td>
-                      <td className="px-6 py-4 text-sm text-text-secondary">
+                      <td className="px-6 py-4 text-sm text-muted-foreground">
                         {collaborator.email}
                       </td>
                       <td className="px-6 py-4">
@@ -257,16 +257,16 @@ export function ProjectAdminPage({ project, onBack }: ProjectAdminPageProps) {
                             <option value="admin">Admin</option>
                             <option value="viewer">Viewer</option>
                           </select>
-                          <ChevronDown className="absolute right-5 top-1/2 transform -translate-y-1/2 w-4 h-4 text-text-secondary pointer-events-none" />
+                          <ChevronDown className="absolute right-5 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
                         </div>
                       </td>
-                      <td className="px-6 py-4 text-sm text-text-secondary">
+                      <td className="px-6 py-4 text-sm text-muted-foreground">
                         {formatDate(collaborator.joinedAt)}
                       </td>
                       <td className="px-6 py-4">
                         <button
                           onClick={() => setRemoveCollaboratorId(collaborator.id)}
-                          className="p-1 hover:bg-red-500/10 rounded-lg transition-colors duration-200 text-text-secondary hover:text-red-500"
+                          className="p-1 hover:bg-red-500/10 rounded-lg transition-colors duration-200 text-muted-foreground hover:text-red-500"
                           aria-label="Remove collaborator"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -292,7 +292,7 @@ export function ProjectAdminPage({ project, onBack }: ProjectAdminPageProps) {
                 {!isEditingProject && (
                   <button
                     onClick={() => setIsEditingProject(true)}
-                    className="p-2 hover:bg-surface-light rounded-lg transition-colors duration-200 text-text-secondary hover:text-foreground"
+                    className="p-2 hover:bg-surface-light rounded-lg transition-colors duration-200 text-muted-foreground hover:text-foreground"
                     aria-label="Edit project"
                   >
                     <Edit3 className="w-4 h-4" />
@@ -334,7 +334,7 @@ export function ProjectAdminPage({ project, onBack }: ProjectAdminPageProps) {
                     className="w-full bg-surface border border-border rounded-lg px-3 py-2 text-foreground focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors duration-200 resize-none"
                   />
                 ) : (
-                  <p className="text-text-secondary py-2">{project.description}</p>
+                  <p className="text-muted-foreground py-2">{project.description}</p>
                 )}
               </div>
 
@@ -441,7 +441,7 @@ export function ProjectAdminPage({ project, onBack }: ProjectAdminPageProps) {
                   <Globe className="w-4 h-4 text-blue-400" />
                   <h3 className="font-medium text-foreground">Public Dashboard</h3>
                 </div>
-                <p className="text-sm text-text-secondary">
+                <p className="text-sm text-muted-foreground">
                   Anyone can view this project&apos;s public dashboard
                 </p>
                 <div className="bg-surface-light border border-border rounded-lg overflow-hidden">
@@ -479,7 +479,7 @@ export function ProjectAdminPage({ project, onBack }: ProjectAdminPageProps) {
                   <UserPlus className="w-4 h-4 text-green-400" />
                   <h3 className="font-medium text-foreground">Collaboration Invite Link</h3>
                 </div>
-                <p className="text-sm text-text-secondary">
+                <p className="text-sm text-muted-foreground">
                   Share this link to invite people as collaborators
                 </p>
                 <div className="bg-surface-light border border-border rounded-lg overflow-hidden">
@@ -536,10 +536,10 @@ export function ProjectAdminPage({ project, onBack }: ProjectAdminPageProps) {
               </div>
               <div>
                 <h3 className="text-lg font-semibold text-foreground">Remove Collaborator</h3>
-                <p className="text-sm text-text-secondary">This action cannot be undone</p>
+                <p className="text-sm text-muted-foreground">This action cannot be undone</p>
               </div>
             </div>
-            <p className="text-text-secondary mb-6">
+            <p className="text-muted-foreground mb-6">
               Are you sure you want to remove this collaborator? They will lose access to the project immediately.
             </p>
             <div className="flex gap-3">

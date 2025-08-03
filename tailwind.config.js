@@ -17,11 +17,13 @@ module.exports = {
         surface: 'hsl(222 14% 11%)', // #1a1a20
         'surface-light': 'hsl(222 14% 14%)', // #21212a
         'surface-hover': 'hsl(222 14% 14%)', // #21212a
+        input: 'hsl(222 14% 16%)', // #252530
         
         // Text colors
         foreground: 'hsl(210 20% 95%)', // #f1f3f5
         'text-secondary': 'hsl(215 15% 70%)', // #9ca3af
         'text-muted': 'hsl(215 15% 50%)', // #6b7280
+        'muted-foreground': 'hsl(215 15% 70%)', // #9ca3af
         
         // Brand colors
         primary: 'hsl(265 85% 65%)', // #8b5cf6
@@ -32,6 +34,7 @@ module.exports = {
         // UI colors
         border: 'hsl(222 14% 18%)', // #2a2a35
         'border-hover': 'hsl(222 14% 25%)', // #3a3a45
+        'border-light': 'hsl(222 14% 25%)', // #3a3a45
       },
       fontSize: {
         'display-lg': ['4rem', { lineHeight: '1.1', letterSpacing: '-0.02em' }],
