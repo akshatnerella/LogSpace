@@ -124,7 +124,7 @@ export function RecentLogs({ projectId, onAddLog }: RecentLogsProps) {
 
       {/* Logs List */}
       {logs.length > 0 ? (
-        <div className="space-y-3">
+        <div className="h-96 overflow-y-auto custom-scrollbar space-y-3 pr-2">
           {logs.map((log, index) => (
             <motion.div
               key={log.id}

@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { X, FileText, Image, Globe, ArrowRight } from 'lucide-react'
 import { LogTypeSelector } from './LogTypeSelector'
 import { TextLogModal } from './TextLogModal'
-import { ImageLogModal } from './ImageLogModal'
+import { VisualLogModal } from './VisualLogModal'
 import { UrlLogModal } from './UrlLogModal'
 
 interface CreateLogModalProps {
@@ -46,22 +46,26 @@ export function CreateLogModal({ isOpen, onClose, onSuccess, projectId }: Create
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            className="absolute inset-0 bg-black/80 backdrop-blur-md"
             onClick={handleModalClose}
           />
 
           {/* Modal Content */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            initial={{ opacity: 0, scale: 0.9, y: 40 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            className="relative bg-background border border-border rounded-2xl shadow-2xl max-w-lg w-full mx-4 max-h-[90vh] overflow-hidden"
+            exit={{ opacity: 0, scale: 0.9, y: 40 }}
+            transition={{ type: "spring", damping: 25, stiffness: 300 }}
+            className="relative bg-surface border border-border-light rounded-3xl shadow-2xl max-w-4xl w-full max-h-[90vh] flex flex-col overflow-hidden"
+            style={{
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.05)'
+            }}
           >
             {!selectedType ? (
               <LogTypeSelector
@@ -78,7 +82,7 @@ export function CreateLogModal({ isOpen, onClose, onSuccess, projectId }: Create
                 projectId={projectId}
               />
             ) : selectedType === 'image' ? (
-              <ImageLogModal
+              <VisualLogModal
                 isOpen={true}
                 onClose={handleBack}
                 onSuccess={handleSuccess}

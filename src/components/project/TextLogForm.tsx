@@ -1,242 +1,159 @@
 "use client"
 
-import { useState, useRef, useEffect } from 'react'
-import { ArrowLeft, Send, Bold, Italic, Link2, Eye, EyeOff } from 'lucide-react'
-import { Button } from '../Button'
+import React, { useState, useRef, useEffect } from 'react'
+import { Button } from '@/components/Button'
+import { X, Plus, Send } from 'lucide-react'
 
 interface TextLogFormProps {
-  projectId: string
+  onSubmit: (data: { title: string; content: string; tags: string[] }) => Promise<void>
   onBack: () => void
-  onSubmit: (data: { title: string; content: string }) => void
+  isSubmitting?: boolean
 }
 
-export function TextLogForm({ projectId, onBack, onSubmit }: TextLogFormProps) {
+export function TextLogForm({ onSubmit, onBack, isSubmitting = false }: TextLogFormProps) {
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
-  const [isPreview, setIsPreview] = useState(false)
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [tags, setTags] = useState<string[]>([])
+  const [newTag, setNewTag] = useState('')
+  
   const titleRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
-    // Auto-focus title input
-    if (titleRef.current) {
-      titleRef.current.focus()
-    }
+    titleRef.current?.focus()
   }, [])
+
+  const addTag = () => {
+    const tag = newTag.trim().toLowerCase()
+    if (tag && !tags.includes(tag) && tags.length < 5) {
+      setTags([...tags, tag])
+      setNewTag('')
+    }
+  }
+
+  const removeTag = (tagToRemove: string) => {
+    setTags(tags.filter(tag => tag !== tagToRemove))
+  }
+
+  const handleTagKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      addTag()
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!title.trim() || !content.trim() || isSubmitting) return
+    if (!title.trim() || !content.trim()) return
 
-    setIsSubmitting(true)
-    
     try {
-      await onSubmit({ title: title.trim(), content: content.trim() })
-    } finally {
-      setIsSubmitting(false)
+      await onSubmit({
+        title: title.trim(),
+        content: content.trim(),
+        tags: tags
+      })
+    } catch (error) {
+      console.error('Error submitting text log:', error)
     }
-  }
-
-  const insertMarkdown = (syntax: string, placeholder = 'text') => {
-    const textarea = document.querySelector('textarea') as HTMLTextAreaElement
-    if (!textarea) return
-
-    const start = textarea.selectionStart
-    const end = textarea.selectionEnd
-    const selectedText = content.substring(start, end)
-    const textToInsert = selectedText || placeholder
-
-    let newText = ''
-    if (syntax === 'bold') {
-      newText = `**${textToInsert}**`
-    } else if (syntax === 'italic') {
-      newText = `*${textToInsert}*`
-    } else if (syntax === 'link') {
-      newText = `[${textToInsert}](url)`
-    }
-
-    const newContent = content.substring(0, start) + newText + content.substring(end)
-    setContent(newContent)
-
-    // Set cursor position
-    setTimeout(() => {
-      textarea.focus()
-      const newCursorPos = start + newText.length
-      textarea.setSelectionRange(newCursorPos, newCursorPos)
-    }, 0)
-  }
-
-  // Simple markdown preview (basic implementation)
-  const renderPreview = (text: string) => {
-    return text
-      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-      .replace(/\*(.*?)\*/g, '<em>$1</em>')
-      .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="text-primary hover:underline">$1</a>')
-      .replace(/\n/g, '<br />')
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <div className="sticky top-0 z-10 bg-surface/95 backdrop-blur-sm border-b border-border">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <button
-                onClick={onBack}
-                className="p-2 hover:bg-surface-light rounded-lg transition-colors duration-200"
-                aria-label="Go back"
-              >
-                <ArrowLeft className="w-5 h-5 text-muted-foreground" />
-              </button>
-              <div>
-                <h1 className="text-lg sm:text-xl font-bold text-foreground">
-                  New Text Log
-                </h1>
-                <p className="text-sm text-muted-foreground">
-                  Share your thoughts and progress
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setIsPreview(!isPreview)}
-                className="p-2 hover:bg-surface-light rounded-lg transition-colors duration-200"
-                aria-label={isPreview ? 'Edit mode' : 'Preview mode'}
-              >
-                {isPreview ? (
-                  <EyeOff className="w-5 h-5 text-muted-foreground" />
-                ) : (
-                  <Eye className="w-5 h-5 text-muted-foreground" />
-                )}
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Form */}
-      <form onSubmit={handleSubmit} className="max-w-4xl mx-auto px-4 sm:px-6 py-6">
-        <div className="space-y-6">
-          {/* Title Input */}
-          <div>
+    <div className="p-4 space-y-4">
+      <form id="text-log-form" onSubmit={handleSubmit} className="space-y-4">
+        {/* Title Field */}
+        <div className="space-y-2">
+          <label htmlFor="title" className="block text-sm font-medium text-foreground">
+            Title *
+          </label>
             <input
               ref={titleRef}
+              id="title"
               type="text"
-              placeholder="What's this log about? (e.g., 'Fixed the login bug' or 'New feature idea')"
+              placeholder="What's this log about?"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full text-xl sm:text-2xl font-semibold bg-transparent border-none outline-none text-foreground placeholder-muted-foreground resize-none"
-              maxLength={120}
+              className="w-full px-3 py-2.5 bg-surface-light border border-border-light rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400/20 focus:border-blue-400 transition-all text-foreground placeholder-muted-foreground text-sm"
+              maxLength={100}
             />
-            <div className="flex justify-between items-center mt-2">
-              <div className="text-xs text-muted-foreground">
-                Title • {title.length}/120 characters
-              </div>
+            <div className="text-xs text-muted-foreground text-right">
+              {title.length}/100 characters
             </div>
           </div>
 
-          {/* Content Area */}
-          <div className="bg-surface border border-border rounded-xl overflow-hidden">
-            {/* Toolbar */}
-            {!isPreview && (
-              <div className="flex items-center gap-1 p-3 border-b border-border bg-surface-light">
-                <button
-                  type="button"
-                  onClick={() => insertMarkdown('bold')}
-                  className="p-2 hover:bg-surface rounded-lg transition-colors duration-200"
-                  aria-label="Bold text"
-                >
-                  <Bold className="w-4 h-4 text-muted-foreground" />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => insertMarkdown('italic')}
-                  className="p-2 hover:bg-surface rounded-lg transition-colors duration-200"
-                  aria-label="Italic text"
-                >
-                  <Italic className="w-4 h-4 text-muted-foreground" />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => insertMarkdown('link')}
-                  className="p-2 hover:bg-surface rounded-lg transition-colors duration-200"
-                  aria-label="Insert link"
-                >
-                  <Link2 className="w-4 h-4 text-muted-foreground" />
-                </button>
-                <div className="ml-auto text-xs text-muted-foreground">
-                  Markdown supported
-                </div>
+          {/* Content Field */}
+          <div className="space-y-2">
+            <label htmlFor="content" className="block text-sm font-medium text-foreground">
+              Content *
+            </label>
+            <textarea
+              id="content"
+              placeholder="Share your thoughts, progress updates, learnings, or anything you'd like to document about your project..."
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              rows={8}
+              className="w-full px-3 py-2.5 bg-surface-light border border-border-light rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400/20 focus:border-blue-400 transition-all resize-none text-foreground placeholder-muted-foreground leading-relaxed text-sm"
+              maxLength={2000}
+            />
+            <div className="text-xs text-muted-foreground text-right">
+              {content.length}/2000 characters
+            </div>
+          </div>
+
+          {/* Tags Field */}
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-foreground">
+              Tags <span className="text-muted-foreground font-normal">(optional)</span>
+            </label>
+            
+            {/* Current Tags */}
+            {tags.length > 0 && (
+              <div className="flex flex-wrap gap-2 mb-3">
+                {tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="inline-flex items-center gap-1 px-2 py-1 bg-blue-400/10 text-blue-400 border border-blue-400/20 rounded-full text-xs"
+                  >
+                    #{tag}
+                    <button
+                      type="button"
+                      onClick={() => removeTag(tag)}
+                      className="hover:bg-blue-400/20 rounded-full p-0.5 transition-colors"
+                      aria-label={`Remove ${tag} tag`}
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  </span>
+                ))}
               </div>
             )}
 
-            {/* Editor/Preview */}
-            <div className="p-4">
-              {isPreview ? (
-                <div className="min-h-[300px] prose prose-invert max-w-none">
-                  {content.trim() ? (
-                    <div
-                      dangerouslySetInnerHTML={{
-                        __html: renderPreview(content)
-                      }}
-                    />
-                  ) : (
-                    <p className="text-muted-foreground italic">
-                      Start typing to see your preview...
-                    </p>
-                  )}
-                </div>
-              ) : (
-                <textarea
-                  placeholder="Share what you're working on, what you've learned, or what's coming next..."
-                  value={content}
-                  onChange={(e) => setContent(e.target.value)}
-                  rows={12}
-                  className="w-full bg-transparent border-none outline-none text-foreground placeholder-muted-foreground resize-none leading-relaxed"
+            {/* Add Tag Input */}
+            {tags.length < 5 && (
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  placeholder="Add a tag..."
+                  value={newTag}
+                  onChange={(e) => setNewTag(e.target.value)}
+                  onKeyDown={handleTagKeyDown}
+                  className="flex-1 px-3 py-2 bg-surface-light border border-border-light rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400/20 focus:border-blue-400 transition-all text-foreground placeholder-muted-foreground text-xs"
+                  maxLength={20}
                 />
-              )}
-            </div>
-          </div>
-
-          {/* Footer Actions */}
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-4 border-t border-border">
-            <div className="flex-1">
-              <p className="text-xs text-muted-foreground">
-                Your log will be visible to anyone following your project. 
-                <span className="font-medium text-foreground"> Keep it authentic!</span>
-              </p>
-            </div>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={() => addTag()}
+                  disabled={!newTag.trim()}
+                  className="px-3 py-2 min-h-[32px] text-xs"
+                >
+                  <Plus className="w-3 h-3" />
+                </Button>
+              </div>
+            )}
             
-            <div className="flex gap-3">
-              <Button
-                type="button"
-                variant="ghost"
-                onClick={onBack}
-                className="px-6 py-2.5 min-h-[44px]"
-              >
-                Cancel
-              </Button>
-              
-              <Button
-                type="submit"
-                variant="primary"
-                disabled={!title.trim() || !content.trim() || isSubmitting}
-                className="px-8 py-2.5 min-h-[44px] font-semibold group"
-              >
-                {isSubmitting ? (
-                  'Publishing...'
-                ) : (
-                  <>
-                    Publish Log
-                    <Send className="w-4 h-4 ml-2 group-hover:translate-x-0.5 transition-transform duration-200" />
-                  </>
-                )}
-              </Button>
+            <div className="text-xs text-muted-foreground">
+              {tags.length}/5 tags • Press Enter or click + to add
             </div>
           </div>
-        </div>
       </form>
     </div>
   )

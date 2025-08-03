@@ -13,6 +13,13 @@ interface LogDetailModalProps {
 }
 
 const typeConfig = {
+  url: {
+    icon: Globe,
+    color: 'from-green-500 to-green-600',
+    bgColor: 'bg-green-50 dark:bg-green-950/20',
+    borderColor: 'border-green-200 dark:border-green-800/30',
+    label: 'Web Link'
+  },
   text: {
     icon: FileText,
     color: 'from-blue-500 to-blue-600',
@@ -26,13 +33,6 @@ const typeConfig = {
     bgColor: 'bg-purple-50 dark:bg-purple-950/20',
     borderColor: 'border-purple-200 dark:border-purple-800/30',
     label: 'Visual Update'
-  },
-  url: {
-    icon: Globe,
-    color: 'from-green-500 to-green-600',
-    bgColor: 'bg-green-50 dark:bg-green-950/20',
-    borderColor: 'border-green-200 dark:border-green-800/30',
-    label: 'Web Link'
   },
   milestone: {
     icon: Calendar,
@@ -188,7 +188,7 @@ export function LogDetailModal({ log, isOpen, onClose }: LogDetailModalProps) {
                     {log.summary && (
                       <div>
                         <h3 className="text-sm font-medium text-foreground mb-2">Summary</h3>
-                        <p className="text-muted-foreground bg-surface p-4 rounded-xl leading-relaxed">
+                        <p className="text-muted-foreground bg-surface-light p-4 rounded-xl leading-relaxed">
                           {log.summary}
                         </p>
                       </div>
@@ -197,7 +197,7 @@ export function LogDetailModal({ log, isOpen, onClose }: LogDetailModalProps) {
                     {log.content && (
                       <div>
                         <h3 className="text-sm font-medium text-foreground mb-2">Content</h3>
-                        <div className="prose prose-sm max-w-none text-muted-foreground bg-surface p-4 rounded-xl">
+                        <div className="prose prose-sm max-w-none text-muted-foreground bg-surface-light p-4 rounded-xl">
                           <pre className="whitespace-pre-wrap font-sans leading-relaxed">
                             {log.content}
                           </pre>
@@ -212,7 +212,7 @@ export function LogDetailModal({ log, isOpen, onClose }: LogDetailModalProps) {
                     {log.summary && (
                       <div>
                         <h3 className="text-sm font-medium text-foreground mb-2">Description</h3>
-                        <p className="text-muted-foreground bg-surface p-4 rounded-xl leading-relaxed">
+                        <p className="text-muted-foreground bg-surface-light p-4 rounded-xl leading-relaxed">
                           {log.summary}
                         </p>
                       </div>
@@ -266,7 +266,7 @@ export function LogDetailModal({ log, isOpen, onClose }: LogDetailModalProps) {
                     {log.summary && (
                       <div>
                         <h3 className="text-sm font-medium text-foreground mb-2">Description</h3>
-                        <p className="text-muted-foreground bg-surface p-4 rounded-xl leading-relaxed">
+                        <p className="text-muted-foreground bg-surface-light p-4 rounded-xl leading-relaxed">
                           {log.summary}
                         </p>
                       </div>
@@ -279,7 +279,7 @@ export function LogDetailModal({ log, isOpen, onClose }: LogDetailModalProps) {
                           href={log.source_link}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center space-x-2 px-4 py-3 bg-surface hover:bg-hover rounded-xl transition-colors group"
+                          className="inline-flex items-center space-x-2 px-4 py-3 bg-surface-light hover:bg-hover rounded-xl transition-colors group"
                         >
                           <Globe className="w-4 h-4 text-muted-foreground group-hover:text-primary" />
                           <span className="text-muted-foreground group-hover:text-primary truncate">
@@ -293,7 +293,7 @@ export function LogDetailModal({ log, isOpen, onClose }: LogDetailModalProps) {
                     {log.content && (
                       <div>
                         <h3 className="text-sm font-medium text-foreground mb-2">Content</h3>
-                        <div className="text-muted-foreground bg-surface p-4 rounded-xl leading-relaxed">
+                        <div className="text-muted-foreground bg-surface-light p-4 rounded-xl leading-relaxed">
                           <pre className="whitespace-pre-wrap font-sans">
                             {log.content}
                           </pre>

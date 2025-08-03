@@ -6,6 +6,7 @@ import { LogTypeSelector } from '@/components/project/LogTypeSelector'
 import { TextLogForm } from '@/components/project/TextLogForm'
 import { VisualLogForm } from '@/components/project/VisualLogForm'
 import { createProjectLog } from '@/lib/queries'
+import { CreateLogData } from '@/types/database'
 
 interface CreateLogPageProps {
   params: Promise<{
@@ -42,15 +43,16 @@ export default function CreateLogPage({ params }: CreateLogPageProps) {
     }
   }
 
-  const handleTextLogSubmit = async (data: { title: string; content: string }) => {
+  const handleTextLogSubmit = async (data: { title: string; content: string; tags: string[] }) => {
     try {
       console.log('Creating text log:', data)
       
-      const logData = {
+      const logData: CreateLogData = {
         project_id: projectId,
         type: 'text' as const,
         title: data.title,
         content: data.content,
+        tags: data.tags,
         timeline_date: new Date().toISOString()
       }
 
@@ -69,16 +71,27 @@ export default function CreateLogPage({ params }: CreateLogPageProps) {
     }
   }
 
-  const handleVisualLogSubmit = async (data: { files: File[]; caption: string }) => {
+  const handleVisualLogSubmit = async (data: { files: File[]; title: string; description: string; tags: string[] }) => {
     try {
-      // TODO: Upload files to backend API
+      // TODO: Upload files to backend API and create log
       console.log('Visual log data:', data)
       
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000))
-      
-      // Show success toast
-      alert('Visual log published successfully!')
+      // For now, create a simple log entry
+      const logData: CreateLogData = {
+        project_id: projectId,
+        type: 'image' as const,
+        title: data.title,
+        content: data.description,
+        tags: data.tags,
+        timeline_date: new Date().toISOString()
+      }
+
+      const result = await createProjectLog(logData)
+      if (!result) {
+        throw new Error('Failed to create log')
+      }
+
+      console.log('Visual log created successfully:', result.id)
       
       // Redirect back to project
       router.push(`/project/${projectId}`)
@@ -115,7 +128,6 @@ export default function CreateLogPage({ params }: CreateLogPageProps) {
   if (selectedType === 'text') {
     return (
       <TextLogForm
-        projectId={projectId}
         onBack={handleBack}
         onSubmit={handleTextLogSubmit}
       />

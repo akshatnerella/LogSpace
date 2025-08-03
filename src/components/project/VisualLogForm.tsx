@@ -1,13 +1,13 @@
 "use client"
 
 import { useState, useRef, useCallback } from 'react'
-import { ArrowLeft, Upload, X, Image as ImageIcon, Video, Send, Camera } from 'lucide-react'
-import { Button } from '../Button'
+import { Upload, X, Image as ImageIcon, Video, Camera, Plus } from 'lucide-react'
 
 interface VisualLogFormProps {
   projectId: string
   onBack: () => void
-  onSubmit: (data: { files: File[]; caption: string }) => void
+  onSubmit: (data: { files: File[]; title: string; description: string; tags: string[] }) => void
+  isSubmitting?: boolean
 }
 
 interface UploadedFile {
@@ -16,17 +16,14 @@ interface UploadedFile {
   type: 'image' | 'video'
 }
 
-export function VisualLogForm({ projectId, onBack, onSubmit }: VisualLogFormProps) {
+export function VisualLogForm({ projectId, onBack, onSubmit, isSubmitting = false }: VisualLogFormProps) {
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([])
-  const [caption, setCaption] = useState('')
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [title, setTitle] = useState('')
+  const [description, setDescription] = useState('')
+  const [tags, setTags] = useState<string[]>([])
+  const [newTag, setNewTag] = useState('')
   const [isDragOver, setIsDragOver] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
-
-  const acceptedTypes = {
-    'image/*': ['.png', '.jpg', '.jpeg', '.gif', '.webp'],
-    'video/*': ['.mp4', '.mov', '.avi', '.webm']
-  }
 
   const createFilePreview = useCallback((file: File): UploadedFile => {
     const preview = URL.createObjectURL(file)
@@ -72,19 +69,39 @@ export function VisualLogForm({ projectId, onBack, onSubmit }: VisualLogFormProp
     handleFileSelect(e.dataTransfer.files)
   }
 
+  const addTag = (e?: React.FormEvent) => {
+    e?.preventDefault()
+    const trimmedTag = newTag.trim().toLowerCase()
+    if (trimmedTag && !tags.includes(trimmedTag) && tags.length < 5) {
+      setTags([...tags, trimmedTag])
+      setNewTag('')
+    }
+  }
+
+  const removeTag = (tagToRemove: string) => {
+    setTags(tags.filter(tag => tag !== tagToRemove))
+  }
+
+  const handleTagKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      addTag()
+    }
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (uploadedFiles.length === 0 || isSubmitting) return
-
-    setIsSubmitting(true)
+    if (uploadedFiles.length === 0 || !title.trim() || isSubmitting) return
     
     try {
       await onSubmit({ 
         files: uploadedFiles.map(f => f.file), 
-        caption: caption.trim() 
+        title: title.trim(),
+        description: description.trim(),
+        tags: tags
       })
-    } finally {
-      setIsSubmitting(false)
+    } catch (error) {
+      console.error('Error submitting visual log:', error)
     }
   }
 
@@ -97,213 +114,228 @@ export function VisualLogForm({ projectId, onBack, onSubmit }: VisualLogFormProp
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <div className="sticky top-0 z-10 bg-surface/95 backdrop-blur-sm border-b border-border">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <button
-                onClick={onBack}
-                className="p-2 hover:bg-surface-light rounded-lg transition-colors duration-200"
-                aria-label="Go back"
-              >
-                <ArrowLeft className="w-5 h-5 text-muted-foreground" />
-              </button>
+    <div className="p-4 space-y-4">
+      <form id="visual-log-form" onSubmit={handleSubmit} className="space-y-4">
+        {/* File Upload Area */}
+        <div className="space-y-3">
+          <label className="block text-sm font-medium text-foreground">
+            Upload Images/Videos *
+          </label>
+          
+          <div
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+            className={`
+              relative border-2 border-dashed rounded-lg p-4 text-center transition-all duration-300
+              ${isDragOver 
+                ? 'border-purple-400 bg-purple-400/5' 
+                : 'border-border-light hover:border-border-hover hover:bg-surface-light/50'
+              }
+            `}
+          >
+            <input
+              ref={fileInputRef}
+              type="file"
+              multiple
+              accept="image/*,video/*"
+              onChange={(e) => handleFileSelect(e.target.files)}
+              className="hidden"
+              aria-label="Upload files"
+            />
+
+            <div className="space-y-3">
+              <div className="w-8 h-8 bg-purple-400/10 rounded-lg mx-auto flex items-center justify-center">
+                <Upload className="w-4 h-4 text-purple-400" />
+              </div>
+              
               <div>
-                <h1 className="text-lg sm:text-xl font-bold text-foreground">
-                  New Visual Log
-                </h1>
-                <p className="text-sm text-muted-foreground">
-                  Share images, videos, or screenshots
+                <h3 className="text-sm font-semibold text-foreground mb-1">
+                  Drop files or click to browse
+                </h3>
+                <p className="text-xs text-muted-foreground mb-2">
+                  JPG, PNG, GIF, WebP, MP4, MOV, AVI, WebM
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Max 5 files • Up to 10MB each
                 </p>
               </div>
+
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                className="px-4 py-2 min-h-[32px] text-sm bg-purple-500 hover:bg-purple-600 text-white rounded-lg transition-colors"
+              >
+                <Camera className="w-3 h-3 mr-2 inline" />
+                Choose Files
+              </button>
             </div>
+          </div>
+
+          {/* Uploaded Files Preview */}
+          {uploadedFiles.length > 0 && (
+            <div className="space-y-3">
+              <h4 className="text-sm font-semibold text-foreground">
+                Uploaded Files ({uploadedFiles.length}/5)
+              </h4>
+              
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                {uploadedFiles.map((uploadedFile, index) => (
+                  <div
+                    key={index}
+                    className="relative bg-surface-light border border-border-light rounded-lg overflow-hidden group"
+                  >
+                    {/* Remove button */}
+                    <button
+                      type="button"
+                      onClick={() => removeFile(index)}
+                      className="absolute top-1.5 right-1.5 z-10 p-1 bg-black/60 hover:bg-black/80 text-white rounded-full transition-colors duration-200"
+                      aria-label="Remove file"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+
+                    {/* File preview */}
+                    <div className="aspect-square bg-surface">
+                      {uploadedFile.type === 'image' ? (
+                        <img
+                          src={uploadedFile.preview}
+                          alt="Upload preview"
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <video
+                          src={uploadedFile.preview}
+                          className="w-full h-full object-cover"
+                          controls
+                        />
+                      )}
+                    </div>
+
+                    {/* File info */}
+                    <div className="p-2">
+                      <div className="flex items-center gap-1.5 mb-0.5">
+                        {uploadedFile.type === 'image' ? (
+                          <ImageIcon className="w-3 h-3 text-purple-400" />
+                        ) : (
+                          <Video className="w-3 h-3 text-purple-400" />
+                        )}
+                        <span className="text-xs font-medium text-foreground truncate">
+                          {uploadedFile.file.name}
+                        </span>
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        {formatFileSize(uploadedFile.file.size)}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Title Input */}
+        <div className="space-y-2">
+          <label htmlFor="title" className="block text-sm font-medium text-foreground">
+            Title *
+          </label>
+          <input
+            id="title"
+            type="text"
+            placeholder="Give your visual log a title..."
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            className="w-full px-3 py-2.5 bg-surface-light border border-border-light rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400/20 focus:border-purple-400 transition-all text-foreground placeholder-muted-foreground text-sm"
+            maxLength={100}
+          />
+          <div className="text-xs text-muted-foreground text-right">
+            {title.length}/100 characters
           </div>
         </div>
-      </div>
 
-      {/* Form */}
-      <form onSubmit={handleSubmit} className="max-w-4xl mx-auto px-4 sm:px-6 py-6">
-        <div className="space-y-6">
-          {/* File Upload Area */}
-          <div className="space-y-4">
-            <div
-              onDragOver={handleDragOver}
-              onDragLeave={handleDragLeave}
-              onDrop={handleDrop}
-              className={`
-                relative border-2 border-dashed rounded-xl p-8 text-center transition-all duration-300
-                ${isDragOver 
-                  ? 'border-primary bg-primary/5' 
-                  : 'border-border hover:border-border-hover hover:bg-surface/50'
-                }
-              `}
-            >
-              <input
-                ref={fileInputRef}
-                type="file"
-                multiple
-                accept="image/*,video/*"
-                onChange={(e) => handleFileSelect(e.target.files)}
-                className="hidden"
-                aria-label="Upload files"
-              />
+        {/* Description Input */}
+        <div className="space-y-2">
+          <label htmlFor="description" className="block text-sm font-medium text-foreground">
+            Description <span className="text-muted-foreground">(optional)</span>
+          </label>
+          <textarea
+            id="description"
+            placeholder="Add context, describe what's happening, or share your thoughts..."
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            rows={3}
+            className="w-full px-3 py-2.5 bg-surface-light border border-border-light rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400/20 focus:border-purple-400 transition-all resize-none text-foreground placeholder-muted-foreground leading-relaxed text-sm"
+            maxLength={300}
+          />
+          <div className="text-xs text-muted-foreground text-right">
+            {description.length}/300 characters
+          </div>
+        </div>
 
-              <div className="space-y-4">
-                <div className="w-16 h-16 bg-primary/10 rounded-xl mx-auto flex items-center justify-center">
-                  <Upload className="w-8 h-8 text-primary" />
-                </div>
-                
-                <div>
-                  <h3 className="text-lg font-semibold text-foreground mb-2">
-                    Drop your files here, or click to browse
-                  </h3>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Support for JPG, PNG, GIF, WebP, MP4, MOV, AVI, WebM
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    Max 5 files • Up to 10MB each
-                  </p>
-                </div>
-
-                <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                  <Button
+        {/* Tags Input */}
+        <div className="space-y-2">
+          <label htmlFor="tags" className="block text-sm font-medium text-foreground">
+            Tags <span className="text-muted-foreground">(optional)</span>
+          </label>
+          
+          {/* Current Tags */}
+          {tags.length > 0 && (
+            <div className="flex flex-wrap gap-1.5 mb-2">
+              {tags.map((tag) => (
+                <span
+                  key={tag}
+                  className="inline-flex items-center gap-1 px-2.5 py-1 bg-purple-400/10 text-purple-400 border border-purple-400/20 rounded-full text-xs"
+                >
+                  #{tag}
+                  <button
                     type="button"
-                    variant="primary"
-                    onClick={() => fileInputRef.current?.click()}
-                    className="px-6 py-2.5 min-h-[44px]"
+                    onClick={() => removeTag(tag)}
+                    className="hover:bg-purple-400/20 rounded-full p-0.5 transition-colors"
+                    aria-label={`Remove ${tag} tag`}
                   >
-                    <Camera className="w-4 h-4 mr-2" />
-                    Choose Files
-                  </Button>
-                </div>
-              </div>
+                    <X className="w-2.5 h-2.5" />
+                  </button>
+                </span>
+              ))}
             </div>
+          )}
 
-            {/* Uploaded Files Preview */}
-            {uploadedFiles.length > 0 && (
-              <div className="space-y-4">
-                <h4 className="font-semibold text-foreground">
-                  Uploaded Files ({uploadedFiles.length}/5)
-                </h4>
-                
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {uploadedFiles.map((uploadedFile, index) => (
-                    <div
-                      key={index}
-                      className="relative bg-surface border border-border rounded-lg overflow-hidden group"
-                    >
-                      {/* Remove button */}
-                      <button
-                        type="button"
-                        onClick={() => removeFile(index)}
-                        className="absolute top-2 right-2 z-10 p-1.5 bg-black/60 hover:bg-black/80 text-white rounded-full transition-colors duration-200"
-                        aria-label="Remove file"
-                      >
-                        <X className="w-4 h-4" />
-                      </button>
-
-                      {/* File preview */}
-                      <div className="aspect-video bg-surface-light">
-                        {uploadedFile.type === 'image' ? (
-                          <img
-                            src={uploadedFile.preview}
-                            alt="Upload preview"
-                            className="w-full h-full object-cover"
-                          />
-                        ) : (
-                          <video
-                            src={uploadedFile.preview}
-                            className="w-full h-full object-cover"
-                            controls
-                          />
-                        )}
-                      </div>
-
-                      {/* File info */}
-                      <div className="p-3">
-                        <div className="flex items-center gap-2 mb-1">
-                          {uploadedFile.type === 'image' ? (
-                            <ImageIcon className="w-4 h-4 text-purple-400" />
-                          ) : (
-                            <Video className="w-4 h-4 text-purple-400" />
-                          )}
-                          <span className="text-sm font-medium text-foreground truncate">
-                            {uploadedFile.file.name}
-                          </span>
-                        </div>
-                        <p className="text-xs text-muted-foreground">
-                          {formatFileSize(uploadedFile.file.size)}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Caption Input */}
-          <div className="space-y-2">
-            <label htmlFor="caption" className="block text-sm font-medium text-foreground">
-              Caption (Optional)
-            </label>
-            <textarea
-              id="caption"
-              placeholder="Add context, describe what's happening, or share your thoughts..."
-              value={caption}
-              onChange={(e) => setCaption(e.target.value)}
-              rows={4}
-              className="w-full bg-surface border border-border rounded-lg px-4 py-3 text-foreground placeholder-muted-foreground focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors duration-200 resize-none"
-              maxLength={500}
-            />
-            <div className="flex justify-between items-center">
-              <p className="text-xs text-muted-foreground">
-                Help viewers understand what they&apos;re seeing
-              </p>
-              <span className="text-xs text-muted-foreground">
-                {caption.length}/500
-              </span>
-            </div>
-          </div>
-
-          {/* Footer Actions */}
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-4 border-t border-border">
-            <div className="flex-1">
-              <p className="text-xs text-muted-foreground">
-                Your visual log will be visible to anyone following your project. 
-                <span className="font-medium text-foreground"> Make sure you have the right to share these files!</span>
-              </p>
-            </div>
-            
-            <div className="flex gap-3">
-              <Button
+          {/* Add Tag Input */}
+          {tags.length < 5 && (
+            <div className="flex gap-2">
+              <input
+                type="text"
+                placeholder="Add a tag..."
+                value={newTag}
+                onChange={(e) => setNewTag(e.target.value)}
+                onKeyDown={handleTagKeyDown}
+                className="flex-1 px-3 py-2 bg-surface-light border border-border-light rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400/20 focus:border-purple-400 transition-all text-foreground placeholder-muted-foreground text-xs"
+                maxLength={20}
+              />
+              <button
                 type="button"
-                variant="ghost"
-                onClick={onBack}
-                className="px-6 py-2.5 min-h-[44px]"
+                onClick={() => addTag()}
+                disabled={!newTag.trim()}
+                className="px-3 py-2 min-h-[32px] text-xs bg-transparent hover:bg-surface-light border border-border-light rounded-lg transition-colors text-foreground disabled:opacity-50 disabled:cursor-not-allowed"
+                aria-label="Add tag"
               >
-                Cancel
-              </Button>
-              
-              <Button
-                type="submit"
-                variant="primary"
-                disabled={uploadedFiles.length === 0 || isSubmitting}
-                className="px-8 py-2.5 min-h-[44px] font-semibold group"
-              >
-                {isSubmitting ? (
-                  'Publishing...'
-                ) : (
-                  <>
-                    Publish Log
-                    <Send className="w-4 h-4 ml-2 group-hover:translate-x-0.5 transition-transform duration-200" />
-                  </>
-                )}
-              </Button>
+                <Plus className="w-3 h-3" />
+              </button>
             </div>
+          )}
+          
+          <div className="text-xs text-muted-foreground">
+            {tags.length}/5 tags • Press Enter or click + to add
           </div>
+        </div>
+
+        {/* Helpful tip */}
+        <div className="p-3 bg-purple-500/5 border border-purple-500/20 rounded-lg">
+          <p className="text-xs text-muted-foreground">
+            <span className="font-medium text-purple-400">💡 Pro tip:</span> Visual logs are perfect for showing progress, 
+            before/after comparisons, or design iterations. Make sure you have rights to share these files!
+          </p>
         </div>
       </form>
     </div>

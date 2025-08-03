@@ -2,41 +2,40 @@
 
 import { useState } from 'react'
 import { X, ArrowLeft, Send } from 'lucide-react'
-import { UrlLogForm } from './UrlLogForm'
+import { VisualLogForm } from './VisualLogForm'
 import { createProjectLog } from '@/lib/queries'
 
-interface UrlLogModalProps {
+interface VisualLogModalProps {
   isOpen: boolean
   onClose: () => void
   onSuccess: () => void
   projectId: string
 }
 
-export function UrlLogModal({ isOpen, onClose, onSuccess, projectId }: UrlLogModalProps) {
+export function VisualLogModal({ isOpen, onClose, onSuccess, projectId }: VisualLogModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const handleSubmit = async (data: { title: string; url: string; description: string; tags: string[] }) => {
+  const handleSubmit = async (data: { files: File[]; title: string; description: string; tags: string[] }) => {
     if (isSubmitting) return
 
     setIsSubmitting(true)
     try {
       const result = await createProjectLog({
         project_id: projectId,
-        type: 'url',
+        type: 'image',
         title: data.title,
         content: data.description,
-        source_link: data.url,
         tags: data.tags
       })
 
       if (result) {
-        console.log('URL log created successfully!')
+        console.log('Visual log created successfully!')
         onSuccess()
       } else {
-        console.error('Failed to create URL log')
+        console.error('Failed to create visual log')
       }
     } catch (error) {
-      console.error('Error creating URL log:', error)
+      console.error('Error creating visual log:', error)
     } finally {
       setIsSubmitting(false)
     }
@@ -47,7 +46,7 @@ export function UrlLogModal({ isOpen, onClose, onSuccess, projectId }: UrlLogMod
   return (
     <div className="flex flex-col h-full min-h-0">
       {/* Header */}
-      <div className="flex-shrink-0 flex items-center justify-between p-4 border-b border-border bg-gradient-to-r from-purple-500/5 to-green-500/5">
+      <div className="flex-shrink-0 flex items-center justify-between p-4 border-b border-border bg-gradient-to-r from-purple-500/5 to-pink-500/5">
         <div className="flex items-center gap-3 min-w-0 flex-1">
           <button
             onClick={onClose}
@@ -57,11 +56,11 @@ export function UrlLogModal({ isOpen, onClose, onSuccess, projectId }: UrlLogMod
             <ArrowLeft className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors" />
           </button>
           <div className="min-w-0 flex-1">
-            <h2 className="text-lg font-bold bg-gradient-to-r from-purple-400 to-green-400 bg-clip-text text-transparent truncate">
-              Create Link Log
+            <h2 className="text-lg font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent truncate">
+              Create Visual Log
             </h2>
             <p className="text-xs text-muted-foreground truncate">
-              Share relevant links and resources with context
+              Upload images, videos, or screenshots with captions
             </p>
           </div>
         </div>
@@ -76,10 +75,11 @@ export function UrlLogModal({ isOpen, onClose, onSuccess, projectId }: UrlLogMod
 
       {/* Scrollable Form Content */}
       <div className="flex-1 overflow-y-auto custom-scrollbar min-h-0">
-        <UrlLogForm
+        <VisualLogForm
           projectId={projectId}
           onBack={onClose}
           onSubmit={handleSubmit}
+          isSubmitting={isSubmitting}
         />
       </div>
 
@@ -96,9 +96,9 @@ export function UrlLogModal({ isOpen, onClose, onSuccess, projectId }: UrlLogMod
           
           <button
             type="submit"
-            form="url-log-form"
+            form="visual-log-form"
             disabled={isSubmitting}
-            className="px-8 py-2 min-h-[36px] min-w-[140px] text-sm font-medium bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+            className="px-8 py-2 min-h-[36px] min-w-[140px] text-sm font-medium bg-purple-500 hover:bg-purple-600 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
           >
             {isSubmitting ? (
               'Publishing...'
