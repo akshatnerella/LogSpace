@@ -133,21 +133,57 @@ export async function fetchProjectById(id: string): Promise<ProjectWithStats | n
       .eq('status', 'active')
       .order('created_at', { ascending: false })
 
-    // Get recent logs
-    const { data: recentLogs } = await supabase
-      .from('project_logs')
+    // Get project stats
+    const [collaboratorCount, logCount] = await Promise.all([
+      getProjectCollaboratorCount(project.id),
+      getProjectLogCount(project.id)
+    ])
+
+    return {
+      ...project,
+      project_collaborators: collaborators || [],
+      collaborator_count: collaboratorCount,
+      log_count: logCount
+    } as ProjectWithStats
+  } catch (error) {
+    console.error('Error in fetchProjectById:', error)
+    return null
+  }
+}
+
+// Public-only version for public dashboard
+export async function fetchPublicProjectById(id: string): Promise<ProjectWithStats | null> {
+  try {
+    // Get the project - ONLY public projects
+    const { data: project, error: projectError } = await supabase
+      .from('projects')
+      .select('*')
+      .eq('id', id)
+      .eq('status', 'active')
+      .eq('visibility', 'public')
+      .single()
+
+    if (projectError || !project) {
+      console.error('Error fetching public project:', projectError)
+      return null
+    }
+
+    // Get collaborators with user details
+    const { data: collaborators } = await supabase
+      .from('project_collaborators')
       .select(`
         *,
         users (
           id,
           name,
+          email,
           avatar_url,
           handle
         )
       `)
       .eq('project_id', project.id)
+      .eq('status', 'active')
       .order('created_at', { ascending: false })
-      .limit(5)
 
     // Get project stats
     const [collaboratorCount, logCount] = await Promise.all([
@@ -158,12 +194,11 @@ export async function fetchProjectById(id: string): Promise<ProjectWithStats | n
     return {
       ...project,
       project_collaborators: collaborators || [],
-      recent_logs: recentLogs || [],
       collaborator_count: collaboratorCount,
-      log_count: logCount,
+      log_count: logCount
     } as ProjectWithStats
   } catch (error) {
-    console.error('Error in fetchProjectById:', error)
+    console.error('Error in fetchPublicProjectById:', error)
     return null
   }
 }

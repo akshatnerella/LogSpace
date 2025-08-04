@@ -25,6 +25,7 @@ import {
 import Link from 'next/link'
 import { Project, ProjectLog } from '@/types/database'
 import { formatRelativeTime } from '@/lib/utils'
+import { toggleProjectVisibility } from '@/lib/projectVisibility'
 
 interface ProjectDashboardProps {
   project: Project & { 
@@ -47,7 +48,44 @@ export function ProjectDashboard({ project }: ProjectDashboardProps) {
   const [completedSteps, setCompletedSteps] = useState<Set<string>>(new Set())
   const [showCollaboratorsModal, setShowCollaboratorsModal] = useState(false)
   const [showCreateLogModal, setShowCreateLogModal] = useState(false)
+  const [showVisibilityModal, setShowVisibilityModal] = useState(false)
+  const [showPrivateTooltip, setShowPrivateTooltip] = useState(false)
+  const [showPublicTooltip, setShowPublicTooltip] = useState(false)
   const [refreshLogsKey, setRefreshLogsKey] = useState(0)
+
+  const handleMakePrivate = async () => {
+    try {
+      const success = await toggleProjectVisibility(project.id, 'private')
+      
+      if (success) {
+        // Refresh the page to update the UI
+        window.location.reload()
+      } else {
+        alert('Failed to make project private. Please try again.')
+      }
+    } catch (error) {
+      console.error('Error in handleMakePrivate:', error)
+      alert('An error occurred. Please try again.')
+    }
+    setShowVisibilityModal(false)
+  }
+
+  const handleMakePublic = async () => {
+    try {
+      const success = await toggleProjectVisibility(project.id, 'public')
+      
+      if (success) {
+        // Refresh the page to update the UI
+        window.location.reload()
+      } else {
+        alert('Failed to make project public. Please try again.')
+      }
+    } catch (error) {
+      console.error('Error in handleMakePublic:', error)
+      alert('An error occurred. Please try again.')
+    }
+    setShowPrivateTooltip(false)
+  }
   
   const createdDate = new Date(project.created_at).toLocaleDateString('en-US', {
     year: 'numeric',
@@ -136,20 +174,143 @@ export function ProjectDashboard({ project }: ProjectDashboardProps) {
             <div className="flex-1">
               <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-3">
                 <h1 className="text-3xl sm:text-4xl font-bold text-white">{project.title}</h1>
-                <div className="flex items-center gap-2 px-3 py-1 bg-surface rounded-full border border-border w-fit">
+                <div className="relative">
                   {project.visibility === 'public' ? (
                     <>
-                      <Eye className="w-4 h-4 text-purple-400" />
-                      <span className="text-sm font-medium text-purple-400">Public</span>
+                      <button 
+                        onClick={() => setShowPublicTooltip(!showPublicTooltip)}
+                        className="flex items-center gap-2 px-3 py-1 bg-surface rounded-full border border-border w-fit hover:bg-surface/80 transition-colors cursor-pointer"
+                      >
+                        <Eye className="w-4 h-4 text-purple-400" />
+                        <span className="text-sm font-medium text-purple-400">Public</span>
+                      </button>
+                      
+                      {/* Small contextual modal for making private */}
+                      {showPublicTooltip && (
+                        <>
+                          {/* Backdrop to close modal */}
+                          <div 
+                            className="fixed inset-0 z-40" 
+                            onClick={() => setShowPublicTooltip(false)}
+                          />
+                          <motion.div
+                            initial={{ opacity: 0, y: -10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
+                            className="absolute top-full left-0 mt-2 w-64 bg-surface border border-border rounded-lg shadow-lg z-50 p-4"
+                          >
+                            <h3 className="text-sm font-medium text-white mb-2">Project Visibility</h3>
+                            <p className="text-xs text-muted-foreground mb-3">
+                              This project is public. Anyone can view your dashboard and logs.
+                            </p>
+                            <div className="flex gap-2">
+                              <button
+                                onClick={handleMakePrivate}
+                                className="flex-1 px-3 py-2 bg-orange-600 hover:bg-orange-700 text-white text-xs rounded-md transition-colors"
+                              >
+                                Make Private
+                              </button>
+                              <button
+                                onClick={() => setShowPublicTooltip(false)}
+                                className="px-3 py-2 bg-surface hover:bg-surface/80 text-muted-foreground text-xs rounded-md border border-border transition-colors"
+                              >
+                                Cancel
+                              </button>
+                            </div>
+                          </motion.div>
+                        </>
+                      )}
                     </>
                   ) : (
                     <>
-                      <Lock className="w-4 h-4 text-muted-foreground" />
-                      <span className="text-sm font-medium text-muted-foreground">Private</span>
+                      <button 
+                        onClick={() => setShowPrivateTooltip(!showPrivateTooltip)}
+                        className="flex items-center gap-2 px-3 py-1 bg-surface rounded-full border border-border w-fit hover:bg-surface/80 transition-colors cursor-pointer"
+                      >
+                        <Lock className="w-4 h-4 text-muted-foreground" />
+                        <span className="text-sm font-medium text-muted-foreground">Private</span>
+                      </button>
+                      
+                      {/* Small contextual modal for making public */}
+                      {showPrivateTooltip && (
+                        <>
+                          {/* Backdrop to close modal */}
+                          <div 
+                            className="fixed inset-0 z-40" 
+                            onClick={() => setShowPrivateTooltip(false)}
+                          />
+                          <motion.div
+                            initial={{ opacity: 0, y: -10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
+                            className="absolute top-full left-0 mt-2 w-64 bg-surface border border-border rounded-lg shadow-lg z-50 p-4"
+                          >
+                            <h3 className="text-sm font-medium text-white mb-2">Project Visibility</h3>
+                            <p className="text-xs text-muted-foreground mb-3">
+                              This project is currently private. Only you can see it.
+                            </p>
+                            <div className="flex gap-2">
+                              <button
+                                onClick={handleMakePublic}
+                                className="flex-1 px-3 py-2 bg-purple-600 hover:bg-purple-700 text-white text-xs rounded-md transition-colors"
+                              >
+                                Make Public
+                              </button>
+                              <button
+                                onClick={() => setShowPrivateTooltip(false)}
+                                className="px-3 py-2 bg-surface hover:bg-surface/80 text-muted-foreground text-xs rounded-md border border-border transition-colors"
+                              >
+                                Cancel
+                              </button>
+                            </div>
+                          </motion.div>
+                        </>
+                      )}
                     </>
                   )}
                 </div>
               </div>
+              
+              {/* Public Dashboard Announcement Box */}
+              {project.visibility === 'public' && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                  className="bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-500/30 rounded-2xl p-4 mb-4 backdrop-blur-sm"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1">
+                      <h3 className="text-lg font-semibold text-white mb-1">
+                        🎉 Your public dashboard is now live!
+                      </h3>
+                      <p className="text-sm text-purple-200 mb-2">
+                        Share your project progress with the world. Check it out here!
+                      </p>
+                      <p className="text-xs text-purple-300">
+                        Have some changes to make? {' '}
+                        <button 
+                          onClick={() => setShowVisibilityModal(true)}
+                          className="underline hover:text-white transition-colors"
+                        >
+                          Make your project private
+                        </button>
+                      </p>
+                    </div>
+                    <motion.a
+                      href={`/p/${project.id}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      className="ml-4 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-medium rounded-xl transition-all duration-200 shadow-lg hover:shadow-purple-500/25 flex items-center gap-2"
+                    >
+                      <Eye className="w-4 h-4" />
+                      View Dashboard
+                    </motion.a>
+                  </div>
+                </motion.div>
+              )}
               
               <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 text-sm text-muted-foreground mb-4">
                 <div className="flex items-center gap-2">
@@ -422,6 +583,65 @@ export function ProjectDashboard({ project }: ProjectDashboardProps) {
         onSuccess={() => setRefreshLogsKey(prev => prev + 1)}
         projectId={project.id}
       />
+
+      {/* Visibility Toggle Modal */}
+      {showVisibilityModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            className="bg-surface border border-border rounded-2xl p-6 max-w-md w-full"
+          >
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-xl font-semibold text-white">Make Project Private</h3>
+              <button
+                onClick={() => setShowVisibilityModal(false)}
+                className="w-8 h-8 rounded-full bg-surface-hover hover:bg-border flex items-center justify-center transition-colors"
+              >
+                <span className="text-muted-foreground text-lg">×</span>
+              </button>
+            </div>
+
+            <div className="mb-6">
+              <p className="text-muted-foreground mb-4">
+                Are you sure you want to make this project private? This will:
+              </p>
+              <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4 mb-4">
+                <div className="flex items-start gap-3">
+                  <span className="text-yellow-400 text-lg">⚠️</span>
+                  <div>
+                    <p className="text-sm text-yellow-200 font-medium mb-1">Warning</p>
+                    <p className="text-sm text-yellow-300">
+                      The public URL will no longer display your dashboard. Visitors will see a "project not found" message.
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <ul className="text-sm text-muted-foreground space-y-2">
+                <li>• Hide your project from public discovery</li>
+                <li>• Disable the public dashboard URL</li>
+                <li>• Only you and collaborators can view the project</li>
+              </ul>
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowVisibilityModal(false)}
+                className="flex-1 px-4 py-2 bg-surface hover:bg-surface-hover border border-border rounded-lg transition-colors text-muted-foreground"
+              >
+                Keep Public
+              </button>
+              <button
+                onClick={handleMakePrivate}
+                className="flex-1 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors font-medium"
+              >
+                Make Private
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
     </div>
   )
 }

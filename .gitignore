@@ -161,6 +161,7 @@ tailwindcss*.map
 DATABASE_REQUIREMENTS.md
 DEPLOYMENT.md
 *.md.backup
+BACKEND_TODO.md
 
 # Backup files
 *.backup
@@ -170,3 +171,5 @@ DEPLOYMENT.md
 # Development tools
 .webpack/
 .rollup.cache/
+.gitignore
+public_dashboard_schema.sql
