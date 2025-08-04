@@ -121,11 +121,8 @@ export function ProjectHeader({ project }: ProjectHeaderProps) {
       <ShareLinkModal
         isOpen={isShareModalOpen}
         onClose={() => setIsShareModalOpen(false)}
-        project={{
-          id: project.id,
-          name: project.title,
-          slug: project.slug
-        }}
+        projectId={project.id}
+        projectName={project.title}
       />
     </div>
   )

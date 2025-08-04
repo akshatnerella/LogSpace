@@ -519,7 +519,8 @@ export function ProjectAdminPage({ project, onBack }: ProjectAdminPageProps) {
       <ShareLinkModal
         isOpen={isShareModalOpen}
         onClose={() => setIsShareModalOpen(false)}
-        project={project}
+        projectId={project.id}
+        projectName={project.name}
       />
 
       {/* Remove Collaborator Confirmation Modal */}

@@ -613,7 +613,7 @@ export function ProjectDashboard({ project }: ProjectDashboardProps) {
                   <div>
                     <p className="text-sm text-yellow-200 font-medium mb-1">Warning</p>
                     <p className="text-sm text-yellow-300">
-                      The public URL will no longer display your dashboard. Visitors will see a "project not found" message.
+                      The public URL will no longer display your dashboard. Visitors will see a &ldquo;project not found&rdquo; message.
                     </p>
                   </div>
                 </div>
